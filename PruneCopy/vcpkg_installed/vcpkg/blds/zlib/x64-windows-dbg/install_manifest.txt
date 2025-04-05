@@ -1,2 +1,0 @@
-F:/Repos_2025/PruneCopy/PruneCopy/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug/lib/zlibd.lib
-F:/Repos_2025/PruneCopy/PruneCopy/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug/bin/zlibd1.dll
