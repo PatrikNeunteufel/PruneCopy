@@ -73,13 +73,17 @@ void Console::printVersion()
 
 void Console::printAbout()
 {
-	std::cout << "PruneCopy - A flexible file copier for build processes\n";
-	std::cout << "=========\n";
-	std::cout << "Author: Patrik Neunteufel\n";
-	std::cout << "Date: April 2025\n";
-	std::cout << "Description: A flexible file copier for build processes (and more).\n";
-	std::cout << "License: MIT License\n";
+    std::cout << "PruneCopy - A flexible file copier for build processes\n";
+    std::cout << "=========\n";
+    std::cout << "Author: Patrik Neunteufel\n";
+    std::cout << "Version: 1.0.0 (Initial Public Release)\n";
+    std::cout << "Date: April 2025\n";
+    std::cout << "Description: A lightweight, pattern-based file copier for post-build and deployment workflows.\n";
+    std::cout << "License: Dual-licensed under MIT or Apache 2.0\n";
+    std::cout << "GitHub: https://github.com/PatrikNeunteufel/PruneCopy\n";
+    std::cout << "Releases: https://github.com/PatrikNeunteufel/PruneCopy/releases\n";
 }
+
 
 void Console::contactDev()
 {
