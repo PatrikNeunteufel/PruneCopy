@@ -16,6 +16,7 @@
 
 using json = nlohmann::json;
 
+std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/sponsors/sponsors.json";
 
 
 void Console::printHelp() {
@@ -83,16 +84,16 @@ void Console::printAbout()
 void Console::contactDev()
 {
     std::cout << "📫 Contact the developer:\n";
-    std::cout << "   GitHub : https://github.com/deinname/PruneCopy\n";
-    std::cout << "   E-Mail : deinname@example.com\n";
-    std::cout << "          mailto:deinname@example.com\n\n";
+    std::cout << "   GitHub : https://github.com/PatrikNeunteufel/PruneCopy\n";
+    //std::cout << "   E-Mail : deinname@example.com\n";
+    //std::cout << "          mailto:deinname@example.com\n\n";
 
 }
 
 void Console::printDonate()
 {
     std::cout << "🙏 Support the project:\n";
-    std::cout << "   Patreon: https://patreon.com/deinname\n";
+    std::cout << "   Patreon: https://patreon.com/PruneCopy\n";
     std::cout << "   Ko-Fi:   https://ko-fi.com/prunecopy\n\n";
 }
 
@@ -116,7 +117,7 @@ void Console::printRandomSupporter(bool allowNetwork)
     }
     if (allowNetwork) {
         try {
-            auto response = cpr::Get(cpr::Url{ "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/main/sponsors/sponsors.json" });
+            auto response = cpr::Get(cpr::Url{ sponsolrFile });
 
             if (response.status_code == 200) {
                 json j = json::parse(response.text);
@@ -167,7 +168,7 @@ void Console::printAllSupporters(bool allowNetwork)
     }
 
     try {
-        auto response = cpr::Get(cpr::Url{ "https://raw.githubusercontent.com/deinuser/PruneCopy/main/sponsors.json" });
+        auto response = cpr::Get(cpr::Url{ sponsolrFile });
 
         if (response.status_code != 200) {
             std::cout << "⚠️  Could not fetch sponsor list (HTTP " << response.status_code << "). Try again later or check --donate\n";

@@ -3,6 +3,10 @@
 **Selective file copier for developers.**  
 A powerful CLI utility for pattern-based file copying and filtering – ideal for post-build tasks and deployment preparation.
 
+the idea for this tool was born out of the need to copy only specific files from a source directory to a target directory, while excluding certain directories and files based on patterns. This is particularly useful in scenarios where you want to prepare a subset of files for deployment or distribution, such as copying only header files or excluding implementation files. e.g. the includes to use a dll does not need the implementation files as `*Impl.hpp`.
+
+The tool is designed to be flexible and extensible, allowing users to customize the file selection process according to their specific needs.
+
 ---
 
 ## ✨ Features (Active)
@@ -23,7 +27,7 @@ A powerful CLI utility for pattern-based file copying and filtering – ideal fo
 ## 🛠️ Example usage
 
 ```bash
-prunecopy ./build ./release --types *.h *.cpp --exclude-dirs test build --log-dir ./logs --log-open
+prunecopy ./source ./build/includes --types *.h *.hpp --exclude-dirs pch --exclude-files *Impl.* --log-dir ./logs --log-open
 ```
 
 ---
@@ -42,9 +46,9 @@ These options are visible or planned but currently not implemented.
 
 If you find this tool useful, consider supporting development:
 
-- `--donate` shows donation options (e.g. [Patreon](https://patreon.com/deinname), [Ko-Fi](https://ko-fi.com/prunecopy))
+- `--donate` shows donation options (e.g. [Patreon](https://patreon.com/PruneCopy), [Ko-Fi](https://ko-fi.com/prunecopy))
 - `--sponsors` shows the current supporter list
-- Become a named supporter in the CLI via [`sponsors.json`](https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/main/sponsors/sponsors.json)
+- Become a named supporter in the CLI via [`sponsors.json`](https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/sponsors/sponsors.json)
 
 ---
 
