@@ -1,0 +1,9 @@
+Package: nlohmann-json
+Version: 3.11.3
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 8df8fd35617151a411cf93219edeb8459101ddfccdf45c11e73c6846445c0b5b
+Description: JSON for Modern C++
+Status: install ok installed

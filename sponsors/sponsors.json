@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Max Mustermann",
+    "url": "https://github.com/maxmustermann",
+    "weight": 3
+  },
+  {
+    "name": "Jane Doe",
+    "url": "https://patreon.com/janedoe",
+    "weight": 2
+  },
+  {
+    "name": "Anonymous Supporter",
+    "url": "",
+    "weight": 1
+  }
+]
