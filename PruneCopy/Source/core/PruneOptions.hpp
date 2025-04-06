@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <regex>
 
 namespace fs = std::filesystem;
 /**
@@ -42,6 +43,8 @@ struct PruneOptions {
     std::vector<std::string> types;
     std::vector<std::string> excludeDirs;
     std::vector<std::string> excludeFiles;
+    std::vector<std::regex> typePatterns;
+    std::vector<std::regex> excludeFilePatterns;
     fs::path logDir;
     bool enableLogging = false;
     bool openLog = false;

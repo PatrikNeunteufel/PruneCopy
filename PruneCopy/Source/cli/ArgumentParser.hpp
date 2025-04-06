@@ -43,6 +43,7 @@ public:
 	 * @return 
 	 */
 	static std::vector<std::string> getOptionValues(int argc, char* argv[], const std::string& flag);
+	std::string getOptionValue(int argc, char* argv[], const std::string& flag);
 };
 
 

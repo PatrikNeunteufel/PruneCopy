@@ -27,5 +27,27 @@ namespace PatternUtils {
         }
         return false;
     }
+    std::string PatternUtils::globToRegex(const std::string& pattern) {
+        std::string regex = "^";
+        for (char c : pattern) {
+            switch (c) {
+            case '*': regex += ".*"; break;
+            case '?': regex += "."; break;
+            case '.': regex += "\\."; break;
+            default: regex += c;
+            }
+        }
+        regex += "$";
+        return regex;
+    }
+    
+    std::vector<std::regex> PatternUtils::convertToRegex(const std::vector<std::string>& patterns) {
+        std::vector<std::regex> result;
+        for (const auto& pattern : patterns) {
+            result.emplace_back(globToRegex(pattern), std::regex::icase);
+        }
+        return result;
+    }
+
 
 } // namespace PatternUtils

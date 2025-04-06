@@ -26,22 +26,23 @@ namespace FileCopier {
     }
 
     void copyFiltered(
-        const std::vector<std::regex>& typePatterns,
-        const std::vector<std::regex>& excludeFilePatterns,
         const PruneOptions& options,
         std::ofstream* logFile
     ) {
-        for (const auto& entry : fs::recursive_directory_iterator(options.src)) {
+        for (auto it = fs::recursive_directory_iterator(options.src); it != fs::recursive_directory_iterator(); ++it) {
+            const auto& entry = *it;
+
             if (entry.is_directory() && isExcludedDir(entry.path(), options.excludeDirs)) {
-                if (!options.quiet) std::cout << "[Skip dir ] " << entry.path() << "\n";
+                if (!options.quiet) std::cout << "[Skip dir  ] " << entry.path() << "\n";
+                it.disable_recursion_pending();
                 continue;
             }
 
             if (!entry.is_regular_file()) continue;
 
             const std::string filename = entry.path().filename().string();
-            if (!typePatterns.empty() && !PatternUtils::matchesPattern(filename, typePatterns)) continue;
-            if (!excludeFilePatterns.empty() && PatternUtils::matchesPattern(filename, excludeFilePatterns)) continue;
+            if (!options.typePatterns.empty() && !PatternUtils::matchesPattern(filename, options.typePatterns)) continue;
+            if (!options.excludeFilePatterns.empty() && PatternUtils::matchesPattern(filename, options.excludeFilePatterns)) continue;
 
             fs::path relPath = fs::relative(entry.path(), options.src);
             fs::path targetFile;
@@ -87,12 +88,11 @@ namespace FileCopier {
                             exit(0);
                         default: continue;
                         }
-                        break; // aus while
+                        break;
                     }
 
-                    if (skipThisFile) continue; // ✅ jetzt wirklich raus aus der for-Schleife
+                    if (skipThisFile) continue;
                 }
-
             }
 
             if (!options.dryRun) {
@@ -104,5 +104,6 @@ namespace FileCopier {
             if (logFile) *logFile << "[Copied    ] " << relPath << "\n";
         }
     }
+
 
 } // namespace FileCopier

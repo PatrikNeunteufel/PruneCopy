@@ -27,8 +27,6 @@ namespace FileCopier {
      * @param logFile Optional log file stream for logging operations.
      */
     void copyFiltered(
-        const std::vector<std::regex>& typePatterns,
-        const std::vector<std::regex>& excludeFilePatterns,
         const PruneOptions& options,
         std::ofstream* logFile = nullptr
     );

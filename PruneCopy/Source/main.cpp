@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 
         switch (options.parallelMode) {
         case ParallelMode::None:
-            FileCopier::copyFiltered(typePatterns, excludeFilePatterns, options,
+            FileCopier::copyFiltered(options,
                 options.enableLogging ? &logFile : nullptr);
             break;
         case ParallelMode::Async:

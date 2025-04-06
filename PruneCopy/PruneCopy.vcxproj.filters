@@ -77,5 +77,6 @@
     <None Include="packages.config" />
     <None Include="..\LICENSE" />
     <None Include="..\README.md" />
+    <None Include="..\installer\installer.iss" />
   </ItemGroup>
 </Project>

@@ -127,6 +127,7 @@
     <ClInclude Include="Source\util\PatternUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\installer\installer.iss" />
     <None Include="..\LICENSE" />
     <None Include="..\README.md" />
     <None Include="packages.config" />
