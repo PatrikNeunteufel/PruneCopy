@@ -365,3 +365,7 @@ FodyWeavers.xsd
 # Ignore vcpkg installation output
 vcpkg_installed/
 PruneCopy/vcpkg_installed/
+
+#ignore installer skript
+installer/
+/testing
