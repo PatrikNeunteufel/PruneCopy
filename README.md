@@ -8,7 +8,7 @@ the idea for this tool was born out of the need to copy only specific files from
 The tool is designed to be flexible and extensible, allowing users to customize the file selection process according to their specific needs.
 
 
-> 🆕 **v1.0.0 Released!**  
+> 🆕 **v1.0.1 Released!**  
 > Download the latest version as a ZIP or Installer [from GitHub Releases](https://github.com/PatrikNeunteufel/PruneCopy/releases).  
 
 

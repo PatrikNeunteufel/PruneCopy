@@ -18,45 +18,38 @@ using json = nlohmann::json;
 
 std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/sponsors/sponsors.json";
 
+void Console::printFlagsHelp(const std::vector<Flag>& flags, int commandSize) {
+    for (const auto& flag : flags) {
+        // Zusammensetzen des linken Teils
+        std::string left = "  " + flag.name;
+
+        if (!flag.shortName.empty()) {
+            left += ", " + flag.shortName;
+        }
+
+        if (!flag.valueRepresentation.empty()) {
+            left += " " + flag.valueRepresentation;
+        }
+
+        // Ausgabe mit Padding
+        std::cout << std::left << std::setw(commandSize) << left
+            << flag.description << '\n';
+    }
+}
 
 void Console::printHelp() {
+    constexpr int helpFieldWidth = 32;
     std::cout << "\n";
     std::cout << "PruneCopy Help\n";
     std::cout << "==============\n\n";
-    std::cout << "Info as first and only argument:\n";
-    std::cout << "  --help, -h                    Show this help message\n";
-    std::cout << "  --usage                       Show usage information\n";
-    std::cout << "  --version                     Show version information\n";
-    std::cout << "  --about                       Show about information\n";
-    std::cout << "  --contact-dev                 Contact the developer\n";
-    std::cout << "  --donate                      This tool helps you and you want to support me\n";
-    std::cout << "  --sponsors                    see the list of supporters\n";
-    std::cout << "\n";
 	std::cout << "Required:\n";
-    std::cout << "  <source>                      Source directory as first argument requried (as long no Info requested)\n";
-    std::cout << "  <destination>                 Destination directory as second argument required (as long no Info requested)\n";
+    printFlagsHelp(required, helpFieldWidth);
+	std::cout << "or Info Flags:\n";
+	printFlagsHelp(infoFlags, helpFieldWidth);
+
     std::cout << "\n";
-    std::cout << "Options:\n";
-	std::cout << "  --no-network                  Disable network access (e.g. for sponsors list)\n";
-    //std::cout << "  --additional-dest <paths>     (planned) Copy to multiple destinations directories additional to the required destination (e.g. --multi-dest C:/path1 C:/path2)\n";
-    std::cout << "  --types <patterns>            Include only files matching given patterns (e.g. *.h *.hpp)\n";
-    std::cout << "  --exclude-dirs <dirs>         Exclude directories by name\n";
-    std::cout << "  --exclude-files <patterns>    Exclude files matching patterns (e.g. *Impl.hpp)\n";
-    std::cout << "  --delete-target-first         Delete the entire target folder before copying\n";
-    std::cout << "  --no-overwrite                Skip files that already exist\n";
-    std::cout << "  --force-overwrite             Overwrite existing files without asking\n";
-    std::cout << "  --cmdln-out-off               Suppress console output\n";
-    std::cout << "  --log-dir <path>              Write operations to a log file in the specified folder\n";
-    std::cout << "  --log-open                    Open the log file after the operation (only when --log-dir <path> is set)\n";
-    std::cout << "  --log-level <level>           Set console log level: info (default), warning, error\n";
-	//std::cout << "  --flatten                     (planned) Copy all files into a single target directory\n";
- //   std::cout << "  --flatten-suffix              (planned) same as --flatten but adds suffixes(e.g.folders) to prevent name clashes\n";
- //   std::cout << "  --parallel-async              (planned) Use async-based parallel file copying\n";
- //   std::cout << "  --parallel-thread             (planned) Use threaded parallel file copying\n";
- //   std::cout << "  --parallel-openMP             (planned) Use OpenMP for parallel copying\n";
-    std::cout << "  --color <mode>                Console color output: auto (default), always, never\n";
-    std::cout << "  --dry-run                     Show what would be copied without doing it\n";
-    
+    std::cout << "Options Flags:\n";
+    printFlagsHelp(optionFlags, helpFieldWidth);
 }
 
 void Console::printUsage()
@@ -68,7 +61,7 @@ void Console::printUsage()
 
 void Console::printVersion()
 {
-    std::cout << "PruneCopy version 1.0.0\n";
+    std::cout << "PruneCopy version 1.0.1\n";
 }
 
 void Console::printAbout()
@@ -76,7 +69,7 @@ void Console::printAbout()
     std::cout << "PruneCopy - A flexible file copier for build processes\n";
     std::cout << "=========\n";
     std::cout << "Author: Patrik Neunteufel\n";
-    std::cout << "Version: 1.0.0 (Initial Public Release)\n";
+    std::cout << "Version: 1.0.1 (check argument syntax)\n";
     std::cout << "Date: April 2025\n";
     std::cout << "Description: A lightweight, pattern-based file copier for post-build and deployment workflows.\n";
     std::cout << "License: Dual-licensed under MIT or Apache 2.0\n";

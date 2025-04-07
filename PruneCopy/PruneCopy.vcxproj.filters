@@ -78,5 +78,6 @@
     <None Include="..\LICENSE" />
     <None Include="..\README.md" />
     <None Include="..\installer\installer.iss" />
+    <None Include="..\changelog.md" />
   </ItemGroup>
 </Project>

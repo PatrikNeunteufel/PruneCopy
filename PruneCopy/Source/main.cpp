@@ -21,6 +21,11 @@ int main(int argc, char* argv[]) {
     }
 #endif
     LogManager::enableAnsiColorsIfSupported();
+
+    if (!ArgumentParser::checkArguments(argc, argv)) {
+		return 1;
+    }
+
     if (ArgumentParser::hasFlag(argc, argv, "--help") || ArgumentParser::hasFlag(argc, argv, "-h")) {
         Console::printHelp();
         return 0;

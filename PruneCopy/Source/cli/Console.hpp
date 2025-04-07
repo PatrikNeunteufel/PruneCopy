@@ -8,6 +8,10 @@
 
 #pragma once
 #include <string>
+#include <vector>
+#include <iomanip>
+
+#include "cli/ArgumentParser.hpp"
 
 enum class MessageType {
 	Info,
@@ -31,6 +35,13 @@ namespace Console {
 		int weight = 1;
 	};
 
+	/**
+	 * @brief Prints command-line flags help to the console.
+	 *
+	 * @param flags The list of command-line flags to print.
+	 * @param commandSize The size of the command for formatting.
+	 */
+	void printFlagsHelp(const std::vector<Flag>& flags, int commandSize);
 	/**
 	 * @brief Prints usage/help message to the console. 
 	 */
