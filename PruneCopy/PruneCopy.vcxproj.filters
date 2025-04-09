@@ -51,6 +51,9 @@
     <ClCompile Include="Source\util\PatternUtils.cpp">
       <Filter>Source\util</Filter>
     </ClCompile>
+    <ClCompile Include="Source\util\ConvertUtils.cpp">
+      <Filter>Source\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -71,6 +74,9 @@
     <ClInclude Include="Source\util\PatternUtils.hpp">
       <Filter>Source\util</Filter>
     </ClInclude>
+    <ClInclude Include="Source\util\ConvertUtils.hpp">
+      <Filter>Source\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
@@ -79,5 +85,8 @@
     <None Include="..\README.md" />
     <None Include="..\installer\installer.iss" />
     <None Include="..\changelog.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\debugger_arguments.txt" />
   </ItemGroup>
 </Project>

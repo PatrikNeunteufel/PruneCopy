@@ -40,7 +40,8 @@ struct Flag {
 	std::string description;
 };
 
-extern std::vector<Flag> required; 
+extern std::vector<Flag> legacy_required;
+extern std::vector<Flag> multi_required;
 /**
  * @brief List of command-line flags for the PruneCopy tool.
  *
@@ -88,6 +89,8 @@ public:
 	static std::vector<std::string> getOptionValues(int argc, char* argv[], const std::string& flag);
 	static std::string getOptionValue(int argc, char* argv[], const std::string& flag);
 	static bool checkArguments(int argc, char* argv[]);
+	static bool checkInfo(int argc, char* argv[]);
+
 };
 
 

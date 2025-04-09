@@ -38,8 +38,8 @@ enum class ColorMode {
  * @brief Central configuration for the PruneCopy application.
  */
 struct PruneOptions {
-    fs::path src;
-    fs::path dst;
+    std::vector<fs::path> sources;
+    std::vector<fs::path> destinations;
     std::vector<std::string> types;
     std::vector<std::string> excludeDirs;
     std::vector<std::string> excludeFiles;

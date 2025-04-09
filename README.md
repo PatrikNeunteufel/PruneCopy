@@ -41,7 +41,10 @@ prunecopy ./source ./build/includes --types *.h *.hpp --exclude-dirs pch --exclu
 
 - Parallel execution (`--parallel-async`, `--parallel-thread`, `--parallel-openMP`)
 - Flattened copy output (`--flatten`, `--flatten-suffix`)
-- Optional installer (with PATH integration)
+- only copy newer files (`--only-newer`)
+- multiple destination folders (`--destination <destpaths>` instead of `<destpath>`)
+- multiple source folders (`--source <sourcepaths>` instead of `<sourcepath>`)
+- eventually `--remote` for copying to remote servers via SSH/SFTP
 
 These options are visible or planned but currently not implemented.
 

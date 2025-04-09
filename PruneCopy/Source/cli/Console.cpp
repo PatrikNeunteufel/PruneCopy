@@ -11,10 +11,11 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#ifndef negal
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h> // HTTP-Client
-
 using json = nlohmann::json;
+#endif
 
 std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/sponsors/sponsors.json";
 
@@ -42,8 +43,13 @@ void Console::printHelp() {
     std::cout << "\n";
     std::cout << "PruneCopy Help\n";
     std::cout << "==============\n\n";
-	std::cout << "Required:\n";
-    printFlagsHelp(required, helpFieldWidth);
+    std::cout << "Required:\n";
+    std::cout << "copy single folders:\n";
+    printFlagsHelp(legacy_required, helpFieldWidth);
+    std::cout << "\n";
+    std::cout << "copy from or to multiple folders:\n";
+    printFlagsHelp(multi_required, helpFieldWidth);
+    std::cout << "\n";
 	std::cout << "or Info Flags:\n";
 	printFlagsHelp(infoFlags, helpFieldWidth);
 
@@ -106,8 +112,8 @@ std::string Console::inputRequest(const std::string& message, const std::string&
 
 void Console::printRandomSupporter(bool allowNetwork)
 {
+#ifndef negal
     std::vector<Supporter> supporters;
-
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Try without --no-network to see random sponsors.\n";
         return;
@@ -155,10 +161,12 @@ void Console::printRandomSupporter(bool allowNetwork)
     if (!s.url.empty())
         std::cout << " (" << s.url << ")";
     std::cout << "\n";
+#endif
 }
 
 void Console::printAllSupporters(bool allowNetwork)
 {
+#ifndef negal
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Use --sponsors without --no-network.\n";
         return;
@@ -194,4 +202,5 @@ void Console::printAllSupporters(bool allowNetwork)
     catch (...) {
         std::cout << "⚠️  Failed to fetch sponsors. Maybe you're offline? See --donate\n";
     }
+#endif
 }

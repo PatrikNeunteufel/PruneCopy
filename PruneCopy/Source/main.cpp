@@ -1,4 +1,6 @@
 #pragma execution_character_set("utf-8")
+
+
 #include "cli/ArgumentParser.hpp"
 #include "cli/Console.hpp"
 #include "util/PatternUtils.hpp"
@@ -15,6 +17,7 @@
 #include <windows.h> // muss vor main eingebunden werden, nur unter Windows
 #endif
 int main(int argc, char* argv[]) {
+	// Set the console output to UTF-8 encoding on Windows
 #ifdef _WIN32
     if (!SetConsoleOutputCP(CP_UTF8)) {
         std::cerr << "[Warning] Could not set UTF-8 output encoding.\n";
@@ -22,39 +25,14 @@ int main(int argc, char* argv[]) {
 #endif
     LogManager::enableAnsiColorsIfSupported();
 
-    if (!ArgumentParser::checkArguments(argc, argv)) {
-		return 1;
-    }
 
-    if (ArgumentParser::hasFlag(argc, argv, "--help") || ArgumentParser::hasFlag(argc, argv, "-h")) {
-        Console::printHelp();
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--version")) {
-		Console::printVersion();
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--usage")) {
-        Console::printUsage();
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--about")) {
-        Console::printAbout();
-        Console::printRandomSupporter(!ArgumentParser::hasFlag(argc, argv, "--no-network"));
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--contact-dev")) {
-        Console::contactDev();
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--donate")) {
-		Console::printDonate();
-        return 0;
-    }
-    if (ArgumentParser::hasFlag(argc, argv, "--sponsors")) {
-        Console::printAllSupporters(!ArgumentParser::hasFlag(argc, argv, "--no-network"));
-        return 0;
-    }
+    if (!ArgumentParser::checkArguments(argc, argv) ) {
+		return 1;
+	}
+	else if (ArgumentParser::checkInfo(argc, argv)) {
+		return 0;
+	}
+
 
     try {
         PruneOptions options;
@@ -77,13 +55,25 @@ int main(int argc, char* argv[]) {
         }
 
         LogManager::log(LogLevel::Info, "Starting PruneCopy");
-        LogManager::log(LogLevel::Info, "Source: " + options.src.string());
-        LogManager::log(LogLevel::Info, "Target: " + options.dst.string());
-        if (options.dryRun) LogManager::log(LogLevel::Info, "Dry run enabled – no files will be copied.");
+		int srcCounter = 1;
+		for (fs::path src : options.sources) {
+			// log all source paths
+			LogManager::log(LogLevel::Info, ("Source " + ((options.sources.size() > 1) ? "(" + std::to_string(srcCounter++) + ")" : "") + ": " + src.string()));
+		}
+		int destCounter = 1;
+		for (fs::path dst : options.destinations) {
+            // log all destination paths
+			LogManager::log(LogLevel::Info, ("Destination " + ((options.destinations.size()>1)?"(" + std::to_string(destCounter++) + ")":"") + ": " + dst.string()));
+			
+		}
+        /* below change dst to do for all destinations */
 
-        if (options.deleteTargetFirst) {
-            LogManager::log(LogLevel::Warning, "Deleting target directory before copy.");
-            if (!options.dryRun) fs::remove_all(options.dst);
+        if (options.dryRun) LogManager::log(LogLevel::Info, "Dry run enabled – no files will be copied.");
+        for (fs::path dst : options.destinations) {
+            if (options.deleteTargetFirst) {
+                LogManager::log(LogLevel::Warning, "Deleting target directory before copy.");
+                if (!options.dryRun) fs::remove_all(dst);
+            }
         }
 
         LogManager::log(LogLevel::Info, "Copying files...");

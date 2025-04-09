@@ -1,0 +1,11 @@
+
+// copy strings
+// copy headers excluding Pch and EntryPoint and files with Impl in the name
+../testing/Source ../testing/testTarget --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.*
+
+// copy headers excluding Pch and EntryPoint and files with Impl in the name; force overwrite; additional create logfile and show logfile after copy
+../testing/Source ../testing/testDestination --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.* --force-overwrite --log-dir ../testing/logs --log-open
+
+// info strings
+--about
+--help

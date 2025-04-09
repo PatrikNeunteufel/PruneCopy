@@ -6,8 +6,9 @@
  * @date   April 2025
  *********************************************************************/
 
-#include "cli/ArgumentParser.hpp"
 #include "util/PatternUtils.hpp"
+#include "util/ConvertUtils.hpp"
+#include "cli/ArgumentParser.hpp"
 #include "cli/Console.hpp"
 
 #include <iostream>
@@ -15,8 +16,12 @@
 #include <stdexcept>
 #include <unordered_set>
 
-std::vector<Flag> required = {
-	{"", "", FlagType::Info, FlagValueType::No_Value, "<source> <destination>", "Source and destination directory"}
+std::vector<Flag> legacy_required = {
+    {"", "", FlagType::Info, FlagValueType::No_Value, "<source> <destination>", "Source and destination directory"}
+
+}; std::vector<Flag> multi_required = {
+	{"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy from multiple source directories"},
+    {"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy to multiple destination directories"},
 };
 std::vector<Flag> infoFlags = {
     {"--help", "-h", FlagType::Info, FlagValueType::No_Value, "", "Show this help message"},
@@ -28,7 +33,8 @@ std::vector<Flag> infoFlags = {
     {"--sponsors", "", FlagType::Info, FlagValueType::No_Value, "", "See the list of supporters"}
 };
 std::vector<Flag> optionFlags = {
-    {"--additional-dest", "", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy to multiple destination directories"},
+    {"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy from multiple source directories"},
+    {"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy to multiple destination directories"},
     {"--no-network", "", FlagType::Option, FlagValueType::No_Value, "", "Disable network access (e.g. for sponsors list)"},
     {"--types", "", FlagType::Option, FlagValueType::Multi_Value, "<patterns>", "Include only files matching given patterns (e.g. *.h *.hpp)"},
     {"--exclude-dirs", "", FlagType::Option, FlagValueType::Multi_Value, "<dirs>", "Exclude directories by name"},
@@ -51,12 +57,44 @@ std::vector<Flag> optionFlags = {
 };
 
 void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
-    if (argc < 3 || argv[1][0] == '-' || argv[2][0] == '-') {
-        throw std::runtime_error("Missing required <source> and <target> directories before options.\nUse --help or -h to display available options.");
+    if (argc >= 3 && argv[1][0] != '-' && argv[2][0] != '-') {
+        // ✅ Legacy-Modus
+        options.sources.push_back(fs::absolute(argv[1]));
+        options.destinations.push_back(fs::absolute(argv[2]));
+
+    }
+    else if (argc >= 3 && argv[1][0] != '-' && (hasFlag(argc, argv, "--destination") || hasFlag(argc, argv, "-d"))) {
+        // ✅ Hybrid-Modus: positional <source> + --destination
+        options.sources.push_back(fs::absolute(argv[1]));
+
+        options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "--destination"));
+        if (options.destinations.empty()) {
+            options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "-d"));
+        }
+    }
+    else {
+        // ✅ Voller CLI-Modus
+        if (hasFlag(argc, argv, "--source") || hasFlag(argc, argv, "-s")) {
+            options.sources = ConvertUtils::toPaths(getOptionValues(argc, argv, "--source"));
+            if (options.sources.empty()) {
+                options.sources = ConvertUtils::toPaths(getOptionValues(argc, argv, "-s"));
+            }
+        }
+        else {
+            throw std::runtime_error("Missing required option: --source or -s");
+        }
+
+        if (hasFlag(argc, argv, "--destination") || hasFlag(argc, argv, "-d")) {
+            options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "--destination"));
+            if (options.destinations.empty()) {
+                options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "-d"));
+            }
+        }
+        else {
+            throw std::runtime_error("Missing required option: --destination or -d");
+        }
     }
 
-    options.src = fs::absolute(argv[1]);
-    options.dst = fs::absolute(argv[2]);
 
     // Wertebasierte Optionen
     options.types = getOptionValues(argc, argv, "--types");
@@ -144,9 +182,8 @@ std::vector<std::string> ArgumentParser::getOptionValues(int argc, char* argv[],
         }
     }
     return values;
-
-
 }
+
 std::string getOptionValue(int argc, char* argv[], const std::string& flag) {
     for (int i = 1; i < argc - 1; ++i) {
         if (std::string(argv[i]) == flag) {
@@ -157,10 +194,10 @@ std::string getOptionValue(int argc, char* argv[], const std::string& flag) {
 }
 
 bool ArgumentParser::checkArguments(int argc, char* argv[]) {
-    //Console::printMessage(MessageType::Error, "test");
-    //return true;
+
 	std::string message;
-    if (argc <= 1) {
+	// check if there are no arguments
+    if (argc <= 1) {                
         message ="No arguments provided.\nuse --help or -h for help\n";
         LogManager::log(LogLevel::Error, message);
         return false;
@@ -249,11 +286,61 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
         return it != infoFlags.end();
         });
 
-    if (!onlyInfoFlags && positionalArgs < 2) {
-        message = "Source and destination paths are required.\nuse --help or -h for help\n";
-        LogManager::log(LogLevel::Error, message);
-        return false;
+    if (!onlyInfoFlags) {
+        bool hasSourceFlag = usedFlags.count("--source") || usedFlags.count("-s");
+        bool hasDestFlag = usedFlags.count("--destination") || usedFlags.count("-d");
+
+        bool validLegacy = (positionalArgs >= 2);
+        bool validHybrid = (positionalArgs == 1 && hasDestFlag);
+        bool validFullCLI = (positionalArgs == 0 && hasSourceFlag && hasDestFlag);
+
+        if (!(validLegacy || validHybrid || validFullCLI)) {
+            message = "Invalid argument combination.\n"
+                "Expected:\n"
+                "  prunecopy <source> <destination>\n"
+                "  prunecopy <source> --destination ...\n"
+                "  prunecopy --source ... --destination ...\n"
+                "Use --help or -h for more information.\n";
+            LogManager::log(LogLevel::Error, message);
+            return false;
+        }
     }
 
+
     return true;
+}
+
+bool ArgumentParser::checkInfo(int argc, char* argv[])
+{
+    if (ArgumentParser::hasFlag(argc, argv, "--help") || ArgumentParser::hasFlag(argc, argv, "-h")) {
+        Console::printHelp();
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--usage")) {
+        Console::printUsage();
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--version")) {
+        Console::printVersion();
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--about")) {
+        Console::printAbout();
+        Console::printRandomSupporter(!ArgumentParser::hasFlag(argc, argv, "--no-network"));
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--contact-dev")) {
+        Console::contactDev();
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--donate")) {
+        Console::printDonate();
+        return true;
+    }
+    if (ArgumentParser::hasFlag(argc, argv, "--sponsors")) {
+        Console::printAllSupporters(!ArgumentParser::hasFlag(argc, argv, "--no-network"));
+        return true;
+    }
+
+    return false;
 }

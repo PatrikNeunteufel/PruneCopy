@@ -1,5 +1,10 @@
 # changelog
 
+## V 1.0.2 - 2025-04-09
+- changed log color only for message tag
+- moved checking for Info Output to bool ArgumentParser:checkInfo returns true if info printed -> end of program
+- implemented multisource and multidestination
+
 ## V 1.0.1 - 2025-04-07
 - added flag structure (including name, shortName, description, type, valueRepresentation, FlagType and FlagValueType)
 - refactored printHelp to use the new flag structure
