@@ -16,12 +16,20 @@
 #include <stdexcept>
 #include <unordered_set>
 
+std::vector<Flag> developerFlags = {
+    {"--test-all", "", FlagType::Internal, FlagValueType::No_Value, "", "Run all tests"},
+    {"--unit-test", "", FlagType::Internal, FlagValueType::No_Value, "", "Run internal unit test suite"},
+    {"--benchmark", "", FlagType::Internal, FlagValueType::No_Value, "", "Run internal performance benchmarks"}
+};
+
 std::vector<Flag> legacy_required = {
     {"", "", FlagType::Info, FlagValueType::No_Value, "<source> <destination>", "Source and destination directory"}
 
-}; std::vector<Flag> multi_required = {
-	{"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy from multiple source directories"},
-    {"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy to multiple destination directories"},
+}; 
+
+std::vector<Flag> multi_required = {
+    {"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "Copy from multiple source directories"},
+    {"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "Copy to multiple destination directories"},
 };
 std::vector<Flag> infoFlags = {
     {"--help", "-h", FlagType::Info, FlagValueType::No_Value, "", "Show this help message"},
@@ -33,8 +41,8 @@ std::vector<Flag> infoFlags = {
     {"--sponsors", "", FlagType::Info, FlagValueType::No_Value, "", "See the list of supporters"}
 };
 std::vector<Flag> optionFlags = {
-    {"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy from multiple source directories"},
-    {"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "(comming feature) Copy to multiple destination directories"},
+    //{"--source", "-s", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "Copy from multiple source directories"},
+    //{"--destination", "-d", FlagType::Option, FlagValueType::Multi_Value, "<paths>", "Copy to multiple destination directories"},
     {"--no-network", "", FlagType::Option, FlagValueType::No_Value, "", "Disable network access (e.g. for sponsors list)"},
     {"--types", "", FlagType::Option, FlagValueType::Multi_Value, "<patterns>", "Include only files matching given patterns (e.g. *.h *.hpp)"},
     {"--exclude-dirs", "", FlagType::Option, FlagValueType::Multi_Value, "<dirs>", "Exclude directories by name"},
@@ -184,7 +192,7 @@ std::vector<std::string> ArgumentParser::getOptionValues(int argc, char* argv[],
     return values;
 }
 
-std::string getOptionValue(int argc, char* argv[], const std::string& flag) {
+std::string ArgumentParser::getOptionValue(int argc, char* argv[], const std::string& flag) {
     for (int i = 1; i < argc - 1; ++i) {
         if (std::string(argv[i]) == flag) {
             return argv[i + 1];
@@ -204,11 +212,23 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
     }
 
     auto isRecognizedFlag = [](const std::string& arg) -> const Flag* {
-        auto it = std::find_if(infoFlags.begin(), infoFlags.end(), [&](const Flag& f) {
+
+        /* check developerFlags vector */
+        auto it = std::find_if(developerFlags.begin(), developerFlags.end(), [&](const Flag& f) {
+            return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
+            });
+        if (it != developerFlags.end()) return &(*it);
+        /* check multi_required vector */
+        it = std::find_if(multi_required.begin(), multi_required.end(), [&](const Flag& f) {
+            return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
+            });
+        if (it != multi_required.end()) return &(*it);
+        /* check infoFlags vector */
+        it = std::find_if(infoFlags.begin(), infoFlags.end(), [&](const Flag& f) {
             return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
             });
         if (it != infoFlags.end()) return &(*it);
-
+        /* check optionFlags vector */
         it = std::find_if(optionFlags.begin(), optionFlags.end(), [&](const Flag& f) {
             return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
             });
@@ -271,7 +291,7 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
     if (argc == 2) {
         const std::string arg = argv[1];
         const Flag* flag = isRecognizedFlag(arg);
-        if (!flag || flag->type != FlagType::Info) {
+        if (!flag || !(flag->type == FlagType::Info || flag->type == FlagType::Internal)) {
             message = "Single argument must be an Info flag (e.g., --help).\nuse --help or -h for help\n";
             LogManager::log(LogLevel::Error, message);
             return false;
@@ -285,8 +305,15 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
             });
         return it != infoFlags.end();
         });
+    // oder kein Internal-Flag vorhanden ist, müssen mindestens zwei Positionsargumente vorhanden sein (Source und Destination)
+    bool onlyInternalFlags = std::all_of(usedFlags.begin(), usedFlags.end(), [](const std::string& name) {
+        auto it = std::find_if(developerFlags.begin(), developerFlags.end(), [&](const Flag& f) {
+            return f.name == name;
+            });
+        return it != developerFlags.end();
+        });
 
-    if (!onlyInfoFlags) {
+    if (!(onlyInfoFlags||onlyInternalFlags)) {
         bool hasSourceFlag = usedFlags.count("--source") || usedFlags.count("-s");
         bool hasDestFlag = usedFlags.count("--destination") || usedFlags.count("-d");
 
@@ -343,4 +370,14 @@ bool ArgumentParser::checkInfo(int argc, char* argv[])
     }
 
     return false;
+}
+
+
+bool ArgumentParser::checkTests(int argc, char* argv[]) {
+    if (hasFlag(argc, argv, "--test-all")) {
+        bool success = TestRunner::runAllTests();
+        return success ? 0 : 1;
+    }
+    // Weitere Test-Modi wie --unit-test oder --benchmark später hier
+    return 0;
 }

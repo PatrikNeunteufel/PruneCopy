@@ -12,16 +12,10 @@
 #include <string>
 #include <filesystem>
 
+namespace fs = std::filesystem;
+
 namespace ConvertUtils {
 
-    namespace fs = std::filesystem;
-
-    inline std::vector<fs::path> toPaths(const std::vector<std::string>& input) {
-        std::vector<fs::path> result;
-        for (const auto& s : input) {
-            result.emplace_back(fs::absolute(fs::path(s)));
-        }
-        return result;
-    }
+    std::vector<fs::path> toPaths(const std::vector<std::string>& input);
 
 }

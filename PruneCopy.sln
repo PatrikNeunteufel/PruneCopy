@@ -7,18 +7,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PruneCopy", "PruneCopy\Prun
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug_Negal|x64 = Debug_Negal|x64
-		Debug_Negal|x86 = Debug_Negal|x86
+		Debug_Work|x64 = Debug_Work|x64
+		Debug_Work|x86 = Debug_Work|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Negal|x64.ActiveCfg = Debug_Negal|x64
-		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Negal|x64.Build.0 = Debug_Negal|x64
-		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Negal|x86.ActiveCfg = Debug_Negal|Win32
-		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Negal|x86.Build.0 = Debug_Negal|Win32
+		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Work|x64.ActiveCfg = Debug_Work|x64
+		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Work|x64.Build.0 = Debug_Work|x64
+		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Work|x86.ActiveCfg = Debug_Work|Win32
+		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug_Work|x86.Build.0 = Debug_Work|Win32
 		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug|x64.ActiveCfg = Debug|x64
 		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug|x64.Build.0 = Debug|x64
 		{6A8F325A-4582-482D-BAB7-8ADE30FA0763}.Debug|x86.ActiveCfg = Debug|Win32

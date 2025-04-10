@@ -16,7 +16,7 @@
 
 
 namespace FileCopier {
-
+    bool isExcludedDir(const fs::path& dir, const std::vector<std::string>& excludeDirs);
     /**
      * @brief Recursively copies files that match inclusion/exclusion patterns.
      *

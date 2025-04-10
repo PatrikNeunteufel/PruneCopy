@@ -9,6 +9,7 @@
 #pragma once
 #include "log/LogManager.hpp"
 #include "core/PruneOptions.hpp"
+#include "test/TestRunner.hpp"
 
 #include <string>
 #include <vector>
@@ -18,7 +19,8 @@ namespace fs = std::filesystem;
 
 enum class FlagType {
 	Info,          ///< Information flag (e.g., --help)
-	Option         ///< Option flag (e.g., --types)
+	Option,         ///< Option flag (e.g., --types)
+	Internal,       ///< Internal flag (e.g., --unit-test)
 };
 /**
  * @brief Enum for different types of command-line flags.
@@ -40,6 +42,7 @@ struct Flag {
 	std::string description;
 };
 
+extern std::vector<Flag> developerFlags;
 extern std::vector<Flag> legacy_required;
 extern std::vector<Flag> multi_required;
 /**
@@ -90,7 +93,7 @@ public:
 	static std::string getOptionValue(int argc, char* argv[], const std::string& flag);
 	static bool checkArguments(int argc, char* argv[]);
 	static bool checkInfo(int argc, char* argv[]);
-
+	static bool checkTests(int argc, char* argv[]);
 };
 
 

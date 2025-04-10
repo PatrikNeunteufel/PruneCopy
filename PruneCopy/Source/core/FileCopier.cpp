@@ -6,7 +6,7 @@
  * @date   April 2025
  *********************************************************************/
 
-#include "core/FileCopier.hpp"
+#include "FileCopier.hpp"
 #include "util/PatternUtils.hpp"
 #include "log/LogManager.hpp"
 
@@ -14,9 +14,9 @@
 
 namespace fs = std::filesystem;
 
-namespace FileCopier {
 
-    static bool isExcludedDir(const fs::path& dir, const std::vector<std::string>& excludeDirs) {
+
+    bool FileCopier::isExcludedDir(const fs::path& dir, const std::vector<std::string>& excludeDirs) {
         for (const auto& ex : excludeDirs) {
             if (dir.filename().string().find(ex) != std::string::npos) {
                 return true;
@@ -25,7 +25,7 @@ namespace FileCopier {
         return false;
     }
 
-    void copyFiltered(
+    void FileCopier::copyFiltered(
         const PruneOptions& options,
         std::ofstream* logFile
     ) {
@@ -109,6 +109,3 @@ namespace FileCopier {
         
         }
     }
-
-
-} // namespace FileCopier

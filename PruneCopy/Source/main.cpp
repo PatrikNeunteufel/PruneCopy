@@ -7,6 +7,9 @@
 #include "core/FileCopier.hpp"
 #include "log/LogManager.hpp"
 #include "core/PruneOptions.hpp"
+#include "test/TestRunner.hpp"
+
+
 
 #include <iostream>
 #include <fstream>
@@ -32,7 +35,9 @@ int main(int argc, char* argv[]) {
 	else if (ArgumentParser::checkInfo(argc, argv)) {
 		return 0;
 	}
-
+    else if (ArgumentParser::checkTests(argc, argv)) {
+        return 0;
+    }
 
     try {
         PruneOptions options;

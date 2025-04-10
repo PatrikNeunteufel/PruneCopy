@@ -28,6 +28,9 @@
     <Filter Include="Source\util">
       <UniqueIdentifier>{f9cb2f3f-ce80-49e3-8e50-57c8d7baf706}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\test">
+      <UniqueIdentifier>{0667e842-cacf-4a1e-bc96-1b36fc18dcf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -54,6 +57,15 @@
     <ClCompile Include="Source\util\ConvertUtils.cpp">
       <Filter>Source\util</Filter>
     </ClCompile>
+    <ClCompile Include="Source\test\BasicFunctionTest.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\test\TestRunner.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\test\TestUtils.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -76,6 +88,15 @@
     </ClInclude>
     <ClInclude Include="Source\util\ConvertUtils.hpp">
       <Filter>Source\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\test\TestRunner.hpp">
+      <Filter>Source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\test\TestUtils.hpp">
+      <Filter>Source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\test\BasicFunctionTest.hpp">
+      <Filter>Source\test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

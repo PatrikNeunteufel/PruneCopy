@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#ifndef negal
+#ifndef atwork
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h> // HTTP-Client
 using json = nlohmann::json;
@@ -61,13 +61,19 @@ void Console::printHelp() {
 void Console::printUsage()
 {
     std::cout << "copy a folder:\n";
-    std::cout << "> PruneCopy.exe <source> <target> [options]\n";
-    std::cout << "If target folder does not exist, it will be created\n";
+    std::cout << "  single source to single destination:\n";
+    std::cout << "> PruneCopy.exe <source> <destination> [options]\n";
+    std::cout << "  single source to single/multiple destination:\n";
+    std::cout << "> PruneCopy.exe <source> --destination <destinations> [options]\n";
+    std::cout << "  single/multiple source to single/multiple destination:\n";
+    std::cout << "> PruneCopy.exe --source <sources> --destination <destinations> [options]\n";
+    std::cout << "If a destination folder does not exist, it will be created\n";
 }
 
 void Console::printVersion()
 {
-    std::cout << "PruneCopy version 1.0.1\n";
+    std::cout << "Version: 1.0.2 (add multiple source and destination)\n";
+    std::cout << "Date: April 2025\n";
 }
 
 void Console::printAbout()
@@ -75,8 +81,7 @@ void Console::printAbout()
     std::cout << "PruneCopy - A flexible file copier for build processes\n";
     std::cout << "=========\n";
     std::cout << "Author: Patrik Neunteufel\n";
-    std::cout << "Version: 1.0.1 (check argument syntax)\n";
-    std::cout << "Date: April 2025\n";
+    printVersion();
     std::cout << "Description: A lightweight, pattern-based file copier for post-build and deployment workflows.\n";
     std::cout << "License: Dual-licensed under MIT or Apache 2.0\n";
     std::cout << "GitHub: https://github.com/PatrikNeunteufel/PruneCopy\n";
@@ -112,7 +117,7 @@ std::string Console::inputRequest(const std::string& message, const std::string&
 
 void Console::printRandomSupporter(bool allowNetwork)
 {
-#ifndef negal
+#ifndef atwork
     std::vector<Supporter> supporters;
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Try without --no-network to see random sponsors.\n";
@@ -166,7 +171,7 @@ void Console::printRandomSupporter(bool allowNetwork)
 
 void Console::printAllSupporters(bool allowNetwork)
 {
-#ifndef negal
+#ifndef atwork
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Use --sponsors without --no-network.\n";
         return;
