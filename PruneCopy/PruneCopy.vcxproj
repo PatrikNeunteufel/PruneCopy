@@ -84,6 +84,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Source\core\Updater.cpp" />
     <ClCompile Include="Source\log\LogManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -162,6 +163,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Source\core\Updater.hpp" />
     <ClInclude Include="Source\log\LogManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -184,6 +186,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\changelog.md" />
+    <None Include="..\data\sponsors.json" />
+    <None Include="..\data\version.json" />
     <None Include="..\installer\installer.iss" />
     <None Include="..\LICENSE" />
     <None Include="..\README.md" />
@@ -309,7 +313,8 @@
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Work|Win32'">
@@ -330,7 +335,8 @@ xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -355,7 +361,8 @@ xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -376,7 +383,8 @@ xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Work|x64'">
@@ -397,7 +405,8 @@ xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -422,7 +431,8 @@ xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
     <PostBuildEvent>
       <Command>xcopy "..\LICENSE" "$(OutDir)" /Y /D
 xcopy "..\README.md" "$(OutDir)" /Y /D
-xcopy "..\changelog.md" "$(OutDir)" /Y /D</Command>
+xcopy "..\changelog.md" "$(OutDir)" /Y /D
+xcopy "..\data\version.json" "$(OutDir)" /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

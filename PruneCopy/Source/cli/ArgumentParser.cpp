@@ -34,6 +34,7 @@ std::vector<Flag> multi_required = {
 std::vector<Flag> infoFlags = {
     {"--help", "-h", FlagType::Info, FlagValueType::No_Value, "", "Show this help message"},
     {"--usage", "", FlagType::Info, FlagValueType::No_Value, "", "Show usage information"},
+    {"--update", "", FlagType::Info, FlagValueType::No_Value, "", "check if newer version is available"},
     {"--version", "", FlagType::Info, FlagValueType::No_Value, "", "Show version information"},
     {"--about", "", FlagType::Info, FlagValueType::No_Value, "", "Show about information"},
     {"--contact-dev", "", FlagType::Info, FlagValueType::No_Value, "", "Contact the developer"},
@@ -351,6 +352,10 @@ bool ArgumentParser::checkInfo(int argc, char* argv[])
         Console::printVersion();
         return true;
     }
+    if (ArgumentParser::hasFlag(argc, argv, "--update")) {
+        Console::printUpdate();
+        return true;
+    }
     if (ArgumentParser::hasFlag(argc, argv, "--about")) {
         Console::printAbout();
         Console::printRandomSupporter(!ArgumentParser::hasFlag(argc, argv, "--no-network"));
@@ -375,9 +380,8 @@ bool ArgumentParser::checkInfo(int argc, char* argv[])
 
 bool ArgumentParser::checkTests(int argc, char* argv[]) {
     if (hasFlag(argc, argv, "--test-all")) {
-        bool success = TestRunner::runAllTests();
-        return success ? 0 : 1;
+        return true;
     }
     // Weitere Test-Modi wie --unit-test oder --benchmark später hier
-    return 0;
+    return false;
 }

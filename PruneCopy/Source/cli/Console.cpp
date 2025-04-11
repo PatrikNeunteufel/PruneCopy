@@ -7,6 +7,7 @@
  *********************************************************************/
 
 #include "cli/Console.hpp"
+#include "core/Updater.hpp"
 
 #include <iostream>
 #include <vector>
@@ -17,7 +18,7 @@
 using json = nlohmann::json;
 #endif
 
-std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/sponsors/sponsors.json";
+std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/data/sponsors.json";
 
 void Console::printFlagsHelp(const std::vector<Flag>& flags, int commandSize) {
     for (const auto& flag : flags) {
@@ -70,10 +71,53 @@ void Console::printUsage()
     std::cout << "If a destination folder does not exist, it will be created\n";
 }
 
+void Console::printUpdate()
+{
+    std::string description, url;
+
+    if (Updater::checkForNewVersion(description, url)) {
+        std::cout << "📢 A new version of PruneCopy is available!\n\n";
+        std::cout << "🆕 What's new:\n" << description << "\n\n";
+        std::cout << "🔗 Download: " << url << "\n";
+        std::cout << "📎 Tip: Use --check-update to verify manually in the future.\n";
+    }
+    else {
+        std::cout << "✅ You are using the latest version of PruneCopy.\n";
+    }
+}
+
 void Console::printVersion()
 {
-    std::cout << "Version: 1.0.2 (add multiple source and destination)\n";
-    std::cout << "Date: April 2025\n";
+    const std::string localPath = "data/version.json";
+    namespace fs = std::filesystem;
+
+    if (!fs::exists(localPath)) {
+        std::cout << "Version: unknown\n";
+        return;
+    }
+
+    try {
+        std::ifstream in(localPath);
+        nlohmann::json j;
+        in >> j;
+
+        int major = j.value("Major", 0);
+        int minor = j.value("Minor", 0);
+        int patch = j.value("Patch", 0);
+        std::string date = j.value("Date", "unknown");
+        std::string description = j.value("Description", "");
+
+        std::cout << "Version: " << major << "." << minor << "." << patch;
+        if (!description.empty()) {
+            std::cout << " (" << description << ")";
+        }
+        std::cout << "\n";
+        std::cout << "Date: " << date << "\n";
+
+    }
+    catch (...) {
+        std::cout << "Version: unknown (failed to parse version.json)\n";
+    }
 }
 
 void Console::printAbout()

@@ -11,7 +11,6 @@
 
 namespace Unittest {
 	bool matchesPatternTest();   // matchesPattern
-	bool globToRegexTest();      // globToRegex
 
 	bool ExcludeDirTest(); // z. B. isExcludedDir
 }

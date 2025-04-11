@@ -8,7 +8,7 @@ the idea for this tool was born out of the need to copy only specific files from
 The tool is designed to be flexible and extensible, allowing users to customize the file selection process according to their specific needs.
 
 
-> 🆕 **v1.0.1 Released!**  
+> 🆕 **v1.0.2 Released!**  
 > Download the latest version as a ZIP or Installer [from GitHub Releases](https://github.com/PatrikNeunteufel/PruneCopy/releases).  
 
 
@@ -27,6 +27,11 @@ The tool is designed to be flexible and extensible, allowing users to customize 
 - Full sponsor listing (`--sponsors`)
 - Donate and contact info (`--donate`, `--contact-dev`)
 
+new features in v1.0.2:
+- multiple source folders (`--source <sourcepaths>` instead of `<sourcepath>`)
+- multiple destination folders (`--destination <destpaths>` instead of `<destpath>`)
+- check for updates (`--update`)
+
 ---
 
 ## 🛠️ Example usage
@@ -42,8 +47,6 @@ prunecopy ./source ./build/includes --types *.h *.hpp --exclude-dirs pch --exclu
 - Parallel execution (`--parallel-async`, `--parallel-thread`, `--parallel-openMP`)
 - Flattened copy output (`--flatten`, `--flatten-suffix`)
 - only copy newer files (`--only-newer`)
-- multiple destination folders (`--destination <destpaths>` instead of `<destpath>`)
-- multiple source folders (`--source <sourcepaths>` instead of `<sourcepath>`)
 - eventually `--remote` for copying to remote servers via SSH/SFTP
 
 These options are visible or planned but currently not implemented.

@@ -66,6 +66,9 @@
     <ClCompile Include="Source\test\TestUtils.cpp">
       <Filter>Source\test</Filter>
     </ClCompile>
+    <ClCompile Include="Source\core\Updater.cpp">
+      <Filter>Source\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -98,6 +101,9 @@
     <ClInclude Include="Source\test\BasicFunctionTest.hpp">
       <Filter>Source\test</Filter>
     </ClInclude>
+    <ClInclude Include="Source\core\Updater.hpp">
+      <Filter>Source\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
@@ -106,6 +112,8 @@
     <None Include="..\README.md" />
     <None Include="..\installer\installer.iss" />
     <None Include="..\changelog.md" />
+    <None Include="..\data\version.json" />
+    <None Include="..\data\sponsors.json" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\debugger_arguments.txt" />

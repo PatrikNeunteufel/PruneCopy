@@ -13,3 +13,5 @@
 // info strings
 --about
 --help
+--test-all
+--update

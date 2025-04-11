@@ -53,7 +53,7 @@ namespace Console {
 	 * @param message The message to print.
 	 */
 	void printUsage();
-
+	void printUpdate();
 	/**
 	 * @brief Prints version information to the console.
 	 */

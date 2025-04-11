@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
     else if (ArgumentParser::checkTests(argc, argv)) {
+        TestRunner::runAllTests();
         return 0;
     }
 
