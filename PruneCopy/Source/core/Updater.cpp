@@ -8,17 +8,20 @@
 
 #include "core/Updater.hpp"
 
+#include "util/PathUtils.hpp"
+
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
 
     bool Updater::checkForNewVersion(std::string& outDescription, std::string& outURL) {
-        const std::string localPath = "version.json";
-        const std::string githubURL = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/data/version.json";
+        const fs::path localPath = PathUtils::getExecutableDirectory() / "version.json";
+        const std::string githubURL = "https://raw.githubusercontent.com/patrikNeunteufel/PruneCopy/master/data/version.json";
 
         // 1. Lokale Version einlesen
         if (!fs::exists(localPath)) return false;
@@ -50,7 +53,7 @@ namespace fs = std::filesystem;
         // 3. Vergleich
         if (localVersion < remoteVersion) {
             outDescription = remoteJson.value("Description", "No changelog available");
-            outURL = remoteJson.value("URL", "https://github.com/PatrikNeunteufel/PruneCopy/releases");
+            outURL = remoteJson.value("URL", "https://github.com/patrikNeunteufel/PruneCopy");
             return true;
         }
 

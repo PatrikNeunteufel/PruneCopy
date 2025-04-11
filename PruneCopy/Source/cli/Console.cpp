@@ -8,6 +8,7 @@
 
 #include "cli/Console.hpp"
 #include "core/Updater.hpp"
+#include "util/PathUtils.hpp"
 
 #include <iostream>
 #include <vector>
@@ -88,7 +89,7 @@ void Console::printUpdate()
 
 void Console::printVersion()
 {
-    const std::string localPath = "data/version.json";
+    const fs::path localPath = PathUtils::getExecutableDirectory() / "version.json";
     namespace fs = std::filesystem;
 
     if (!fs::exists(localPath)) {

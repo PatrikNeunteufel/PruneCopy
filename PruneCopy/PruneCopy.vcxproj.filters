@@ -69,6 +69,9 @@
     <ClCompile Include="Source\core\Updater.cpp">
       <Filter>Source\core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\util\PathUtils.cpp">
+      <Filter>Source\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="Source\core\Updater.hpp">
       <Filter>Source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\PathUtils.hpp">
+      <Filter>Source\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

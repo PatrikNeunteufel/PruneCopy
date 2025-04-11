@@ -104,6 +104,7 @@
     <ClCompile Include="Source\test\TestRunner.cpp" />
     <ClCompile Include="Source\test\TestUtils.cpp" />
     <ClCompile Include="Source\util\ConvertUtils.cpp" />
+    <ClCompile Include="Source\util\PathUtils.cpp" />
     <ClCompile Include="Source\util\PatternUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +183,7 @@
     <ClInclude Include="Source\test\TestRunner.hpp" />
     <ClInclude Include="Source\test\TestUtils.hpp" />
     <ClInclude Include="Source\util\ConvertUtils.hpp" />
+    <ClInclude Include="Source\util\PathUtils.hpp" />
     <ClInclude Include="Source\util\PatternUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
