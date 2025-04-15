@@ -8,17 +8,16 @@
 
 #pragma once
 
+#pragma once
+#include <string>
 
-namespace Unittest {
-	bool matchesPatternTest();   // matchesPattern
+class BasicFunctionTest {
+public:
+    static bool run();  // Führt alle Tests aus und gibt Erfolg zurück
 
-	bool ExcludeDirTest(); // z. B. isExcludedDir
-}
-
-namespace Integrationtest {
-	bool PatternMatchingTest();  // wildcardsToRegex + matchesPattern
-}
-
-namespace BasicFunctionTest {
-	bool run(); // calls all basic function tests
-}
+private:
+    static bool testConvertUtils();
+    static bool testPathUtils();
+    static bool testPatternUtils();
+    static bool testPruneOptionsParsing();
+};

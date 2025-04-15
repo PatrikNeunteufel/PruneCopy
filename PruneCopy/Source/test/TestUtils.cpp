@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-bool assertTrue(bool condition, const std::string& testName) {
+bool TestUtils::assertTrue(bool condition, const std::string& testName) {
 	if (!condition) {
 		std::cerr << "[FAIL] " << testName << "\n";
 		return false;
@@ -19,6 +19,6 @@ bool assertTrue(bool condition, const std::string& testName) {
 	return true;
 }
 
-bool assertFalse(bool condition, const std::string& testName) {
+bool TestUtils::assertFalse(bool condition, const std::string& testName) {
 	return assertTrue(!condition, testName);
 }
