@@ -72,6 +72,9 @@
     <ClCompile Include="Source\util\PathUtils.cpp">
       <Filter>Source\util</Filter>
     </ClCompile>
+    <ClCompile Include="Source\test\FileCopierTest.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="Source\util\PathUtils.hpp">
       <Filter>Source\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\test\FileCopierTest.hpp">
+      <Filter>Source\test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

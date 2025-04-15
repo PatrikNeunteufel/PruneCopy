@@ -12,9 +12,11 @@
 
 #include <fstream>
 #include <filesystem>
+#include <iostream>
+#ifndef atwork
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h>
-#include <iostream>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -25,7 +27,7 @@ namespace fs = std::filesystem;
 
         // 1. Lokale Version einlesen
         if (!fs::exists(localPath)) return false;
-
+#ifndef atwork
         nlohmann::json localJson;
         try {
             std::ifstream in(localPath);
@@ -49,7 +51,6 @@ namespace fs = std::filesystem;
         }
 
         Version remoteVersion = Version::fromJson(remoteJson);
-
         // 3. Vergleich
         if (localVersion < remoteVersion) {
             outDescription = remoteJson.value("Description", "No changelog available");
@@ -57,6 +58,7 @@ namespace fs = std::filesystem;
             return true;
         }
 
+#endif
         return false;
     }
 

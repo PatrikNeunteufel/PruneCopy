@@ -9,8 +9,9 @@
 #pragma once
 
 #include <string>
+#ifndef atwork 
 #include <nlohmann/json.hpp>
-
+#endif
 namespace Updater {
 
     struct Version {
@@ -30,6 +31,7 @@ namespace Updater {
                 std::to_string(patch);
         }
 
+#ifndef atwork 
         static Version fromJson(const nlohmann::json& j) {
             return Version{
                 j.value("Major", 0),
@@ -37,6 +39,7 @@ namespace Updater {
                 j.value("Patch", 0)
             };
         }
+#endif
     };
 
     /**

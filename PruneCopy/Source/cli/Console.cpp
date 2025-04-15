@@ -98,6 +98,7 @@ void Console::printVersion()
     }
 
     try {
+#ifndef atwork
         std::ifstream in(localPath);
         nlohmann::json j;
         in >> j;
@@ -114,7 +115,7 @@ void Console::printVersion()
         }
         std::cout << "\n";
         std::cout << "Date: " << date << "\n";
-
+#endif
     }
     catch (...) {
         std::cout << "Version: unknown (failed to parse version.json)\n";
