@@ -369,3 +369,7 @@ PruneCopy/vcpkg_installed/
 #ignore installer skript
 installer/
 /testing
+/PruneCopy/test_workspace
+/PruneCopy/copy_log.txt
+/PruneCopy/copy_log_force_overwrite.txt
+/PruneCopy/copy_log_no_overwrite.txt
