@@ -373,3 +373,4 @@ installer/
 /PruneCopy/copy_log.txt
 /PruneCopy/copy_log_force_overwrite.txt
 /PruneCopy/copy_log_no_overwrite.txt
+/PruneCopy/falsify_log.txt
