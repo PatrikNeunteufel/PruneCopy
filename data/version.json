@@ -1,9 +1,9 @@
 {
   "Major": 1,
   "Minor": 0,
-  "Patch": 2,
-  "Build": 4711,
+  "Patch": 3,
+  "Build": 4715,
   "Date": "2025-04-11",
-  "Description": "Added --test-all and unit testing support/n multiple sources and destinations",
+  "Description": "Testing",
   "URL": "https://github.com/patrikNeunteufel/PruneCopy"
 }

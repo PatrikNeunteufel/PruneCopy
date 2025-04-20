@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+ // Asserts that a condition is true; logs result to stdout or stderr
 bool TestUtils::assertTrue(bool condition, const std::string& testName) {
 	if (!condition) {
 		std::cerr << "[FAIL] " << testName << "\n";
@@ -19,6 +20,7 @@ bool TestUtils::assertTrue(bool condition, const std::string& testName) {
 	return true;
 }
 
+// Asserts that a condition is false by negating it and delegating to assertTrue()
 bool TestUtils::assertFalse(bool condition, const std::string& testName) {
 	return assertTrue(!condition, testName);
 }

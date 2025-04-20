@@ -9,6 +9,7 @@
 #include "TestRunner.hpp"
 #include "TestUtils.hpp"
 #include "FileCopierTest.hpp"
+#include "ArgumentParseTest.hpp"
 
 
  // includes für einzelne Testgruppen
@@ -16,17 +17,24 @@
 
 #include <iostream>
 
+// Executes all registered test suites and prints summary to the console
 bool TestRunner::runAllTests() {
 	bool allPassed = true;
 
-	std::cout << "[TEST] Running unit tests...\n";
+	// Run argument parsing tests
+	std::cout << "[TEST] Running argument tests...\n";
+	if (!ArgumentParseTest::run()) allPassed = false;
 
+	// Run basic functionality tests
+	std::cout << "[TEST] Running basic tests...\n";
 	if (!BasicFunctionTest::run()) allPassed = false;
+
+	// Run integration tests involving file operations
 	std::cout << "[TEST] Running integration tests...\n";
 	if (!FileCopierTest::run()) allPassed = false;
-	// usw.
 
+	// Print overall test result
 	std::cout << (allPassed ? "[TEST] ALL PASSED\n" : "[TEST] FAILURES DETECTED\n");
+
 	return allPassed;
 }
-

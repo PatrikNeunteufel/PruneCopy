@@ -13,33 +13,35 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#ifndef atwork
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+#ifndef atwork  // just a define to disable some features that are not available on another development machine
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h> // HTTP-Client
 using json = nlohmann::json;
 #endif
 
+// Remote JSON file containing supporter data
 std::string sponsolrFile = "https://raw.githubusercontent.com/PatrikNeunteufel/PruneCopy/master/data/sponsors.json";
 
+// Prints a formatted list of flags with optional short names and value representations
 void Console::printFlagsHelp(const std::vector<Flag>& flags, int commandSize) {
     for (const auto& flag : flags) {
-        // Zusammensetzen des linken Teils
         std::string left = "  " + flag.name;
-
         if (!flag.shortName.empty()) {
             left += ", " + flag.shortName;
         }
-
         if (!flag.valueRepresentation.empty()) {
             left += " " + flag.valueRepresentation;
         }
-
-        // Ausgabe mit Padding
         std::cout << std::left << std::setw(commandSize) << left
             << flag.description << '\n';
     }
 }
 
+// Displays the main help screen, grouped by required and optional flags
 void Console::printHelp() {
     constexpr int helpFieldWidth = 32;
     std::cout << "\n";
@@ -48,20 +50,16 @@ void Console::printHelp() {
     std::cout << "Required:\n";
     std::cout << "copy single folders:\n";
     printFlagsHelp(legacy_required, helpFieldWidth);
-    std::cout << "\n";
-    std::cout << "copy from or to multiple folders:\n";
+    std::cout << "\ncopy from or to multiple folders:\n";
     printFlagsHelp(multi_required, helpFieldWidth);
-    std::cout << "\n";
-	std::cout << "or Info Flags:\n";
-	printFlagsHelp(infoFlags, helpFieldWidth);
-
-    std::cout << "\n";
-    std::cout << "Options Flags:\n";
+    std::cout << "\nor Info Flags:\n";
+    printFlagsHelp(infoFlags, helpFieldWidth);
+    std::cout << "\nOptions Flags:\n";
     printFlagsHelp(optionFlags, helpFieldWidth);
 }
 
-void Console::printUsage()
-{
+// Shows usage examples for legacy, hybrid, and full CLI modes
+void Console::printUsage() {
     std::cout << "copy a folder:\n";
     std::cout << "  single source to single destination:\n";
     std::cout << "> PruneCopy.exe <source> <destination> [options]\n";
@@ -72,10 +70,9 @@ void Console::printUsage()
     std::cout << "If a destination folder does not exist, it will be created\n";
 }
 
-void Console::printUpdate()
-{
+// Checks for newer versions online and displays update info if available
+void Console::printUpdate() {
     std::string description, url;
-
     if (Updater::checkForNewVersion(description, url)) {
         std::cout << "📢 A new version of PruneCopy is available!\n\n";
         std::cout << "🆕 What's new:\n" << description << "\n\n";
@@ -87,10 +84,9 @@ void Console::printUpdate()
     }
 }
 
-void Console::printVersion()
-{
+// Displays version information from the local version.json file
+void Console::printVersion() {
     const fs::path localPath = PathUtils::getExecutableDirectory() / "version.json";
-    namespace fs = std::filesystem;
 
     if (!fs::exists(localPath)) {
         std::cout << "Version: unknown\n";
@@ -122,8 +118,8 @@ void Console::printVersion()
     }
 }
 
-void Console::printAbout()
-{
+// Prints about section including author, license, and project links
+void Console::printAbout() {
     std::cout << "PruneCopy - A flexible file copier for build processes\n";
     std::cout << "=========\n";
     std::cout << "Author: Patrik Neunteufel\n";
@@ -134,61 +130,59 @@ void Console::printAbout()
     std::cout << "Releases: https://github.com/PatrikNeunteufel/PruneCopy/releases\n";
 }
 
-
-void Console::contactDev()
-{
+// Displays developer contact info
+void Console::contactDev() {
     std::cout << "📫 Contact the developer:\n";
     std::cout << "   GitHub : https://github.com/PatrikNeunteufel/PruneCopy\n";
-    //std::cout << "   E-Mail : deinname@example.com\n";
-    //std::cout << "          mailto:deinname@example.com\n\n";
-
+    // Uncomment to add email contact
 }
 
-void Console::printDonate()
-{
+// Displays donation links for community support
+void Console::printDonate() {
     std::cout << "🙏 Support the project:\n";
     std::cout << "   Patreon: https://patreon.com/PruneCopy\n";
     std::cout << "   Ko-Fi:   https://ko-fi.com/prunecopy\n\n";
 }
 
-void Console::printMessage(MessageType messageType, const std::string& message)
-{
+
+// Placeholder for standardized message output (info, warning, etc.)
+void Console::printMessage(MessageType messageType, const std::string& message) {
+    // TODO: Implement message formatting and output
 }
 
-std::string Console::inputRequest(const std::string& message, const std::string& defaultValue)
-{
+// Placeholder for input prompts with optional default values
+std::string Console::inputRequest(const std::string& message, const std::string& defaultValue) {
+	// 
     return std::string();
 }
 
-
-void Console::printRandomSupporter(bool allowNetwork)
-{
+// Downloads sponsor list from GitHub and displays one random supporter (weighted)
+void Console::printRandomSupporter(bool allowNetwork) {
 #ifndef atwork
     std::vector<Supporter> supporters;
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Try without --no-network to see random sponsors.\n";
         return;
     }
-    if (allowNetwork) {
-        try {
-            auto response = cpr::Get(cpr::Url{ sponsolrFile });
 
-            if (response.status_code == 200) {
-                json j = json::parse(response.text);
-                for (const auto& item : j) {
-                    Supporter s;
-                    s.name = item.value("name", "");
-                    s.url = item.value("url", "");
-                    s.weight = item.value("weight", 1); // default weight: 1
-                    if (!s.name.empty() && s.weight > 0)
-                        supporters.push_back(s);
-                }
+    try {
+        auto response = cpr::Get(cpr::Url{ sponsolrFile });
+
+        if (response.status_code == 200) {
+            json j = json::parse(response.text);
+            for (const auto& item : j) {
+                Supporter s;
+                s.name = item.value("name", "");
+                s.url = item.value("url", "");
+                s.weight = item.value("weight", 1);
+                if (!s.name.empty() && s.weight > 0)
+                    supporters.push_back(s);
             }
         }
-        catch (...) {
-            std::cout << "⚠️  Failed to fetch sponsor list. Check your internet or visit: --donate\n";
-            return;
-        }
+    }
+    catch (...) {
+        std::cout << "⚠️  Failed to fetch sponsor list. Check your internet or visit: --donate\n";
+        return;
     }
 
     if (supporters.empty()) {
@@ -196,11 +190,10 @@ void Console::printRandomSupporter(bool allowNetwork)
         return;
     }
 
-    // 🎲 Gewichtete Zufallsauswahl
+    // 🎲 Weighted random selection based on supporter weight
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Baue gewichtete Verteilung auf
     std::vector<int> weights;
     for (const auto& s : supporters) weights.push_back(s.weight);
     std::discrete_distribution<> dist(weights.begin(), weights.end());
@@ -215,8 +208,8 @@ void Console::printRandomSupporter(bool allowNetwork)
 #endif
 }
 
-void Console::printAllSupporters(bool allowNetwork)
-{
+// Downloads and displays the full list of supporters from GitHub
+void Console::printAllSupporters(bool allowNetwork) {
 #ifndef atwork
     if (!allowNetwork) {
         std::cout << "🌐 Network access is disabled. Use --sponsors without --no-network.\n";

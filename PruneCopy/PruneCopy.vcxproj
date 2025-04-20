@@ -100,6 +100,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\test\ArgumentParseTest.cpp" />
     <ClCompile Include="Source\test\BasicFunctionTest.cpp" />
     <ClCompile Include="Source\test\FileCopierTest.cpp" />
     <ClCompile Include="Source\test\TestRunner.cpp" />
@@ -180,6 +181,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Source\test\ArgumentParseTest.hpp" />
     <ClInclude Include="Source\test\BasicFunctionTest.hpp" />
     <ClInclude Include="Source\test\FileCopierTest.hpp" />
     <ClInclude Include="Source\test\TestRunner.hpp" />
@@ -194,6 +196,7 @@
     <None Include="..\data\version.json" />
     <None Include="..\installer\installer.iss" />
     <None Include="..\LICENSE" />
+    <None Include="..\PruneCopy_Comparison_EN.md" />
     <None Include="..\README.md" />
     <None Include="packages.config" />
     <None Include="vcpkg.json" />

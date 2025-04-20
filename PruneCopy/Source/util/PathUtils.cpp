@@ -12,7 +12,8 @@
 #include <windows.h>
 #endif
 
-
+ // Returns the directory where the current executable resides.
+ // On Windows, uses GetModuleFileNameW; on other platforms, falls back to current working directory.
 std::filesystem::path PathUtils::getExecutableDirectory() {
 #ifdef _WIN32
     wchar_t buffer[MAX_PATH];

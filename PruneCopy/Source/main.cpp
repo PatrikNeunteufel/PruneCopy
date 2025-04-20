@@ -17,36 +17,42 @@
 #include <iomanip>
 #include <sstream>
 #ifdef _WIN32
-#include <windows.h> // muss vor main eingebunden werden, nur unter Windows
+#include <windows.h> //only under windows
 #endif
+
 int main(int argc, char* argv[]) {
-	// Set the console output to UTF-8 encoding on Windows
+    // Set the console output to UTF-8 encoding on Windows
 #ifdef _WIN32
     if (!SetConsoleOutputCP(CP_UTF8)) {
         std::cerr << "[Warning] Could not set UTF-8 output encoding.\n";
     }
 #endif
-    LogManager::enableAnsiColorsIfSupported();
 
-
-    if (!ArgumentParser::checkArguments(argc, argv) ) {
-		return 1;
-	}
-	else if (ArgumentParser::checkInfo(argc, argv)) {
-		return 0;
-	}
+    // Handle CLI control flags: help, info, test, or argument validation
+    if (!ArgumentParser::checkArguments(argc, argv)) {
+        return 1;
+    }
+    else if (ArgumentParser::checkInfo(argc, argv)) {
+        return 0;
+    }
     else if (ArgumentParser::checkTests(argc, argv)) {
         TestRunner::runAllTests();
         return 0;
     }
 
     try {
+        // Parse arguments into PruneOptions and configure logging
         PruneOptions options;
         ArgumentParser::parse(argc, argv, options);
+        LogManager::setConsoleLogLevel(options.logLevel);
+        LogManager::enableAnsiColorsIfSupported(options.colorMode);
+        ArgumentParser::emitDeprecatedWarnings(); // now colored output
 
+        // Preprocess patterns for filtering
         auto typePatterns = PatternUtils::wildcardsToRegex(options.types);
         auto excludeFilePatterns = PatternUtils::wildcardsToRegex(options.excludeFiles);
 
+        // Set up logging to file, if enabled
         std::ofstream logFile;
         std::string logFilePath;
         if (options.enableLogging) {
@@ -58,22 +64,35 @@ int main(int argc, char* argv[]) {
             fs::create_directories(options.logDir);
             logFilePath = filename.str();
             logFile.open(logFilePath);
+
+            if (logFile.is_open()) {
+                LogManager::setLogFile(&logFile);
+            }
+            else {
+                std::cerr << "Logfile could not be opened!\n";
+            }
         }
 
+        // Start main process
         LogManager::log(LogLevel::Info, "Starting PruneCopy");
-		int srcCounter = 1;
-		for (fs::path src : options.sources) {
-			// log all source paths
-			LogManager::log(LogLevel::Info, ("Source " + ((options.sources.size() > 1) ? "(" + std::to_string(srcCounter++) + ")" : "") + ": " + src.string()));
-		}
-		int destCounter = 1;
-		for (fs::path dst : options.destinations) {
-            // log all destination paths
-			LogManager::log(LogLevel::Info, ("Destination " + ((options.destinations.size()>1)?"(" + std::to_string(destCounter++) + ")":"") + ": " + dst.string()));
-			
-		}
-        /* below change dst to do for all destinations */
 
+        // Log all source paths
+        int srcCounter = 1;
+        for (fs::path src : options.sources) {
+            LogManager::log(LogLevel::Info,
+                "Source " + ((options.sources.size() > 1) ? "(" + std::to_string(srcCounter++) + ")" : "") +
+                ": " + src.string());
+        }
+
+        // Log all destination paths
+        int destCounter = 1;
+        for (fs::path dst : options.destinations) {
+            LogManager::log(LogLevel::Info,
+                "Destination " + ((options.destinations.size() > 1) ? "(" + std::to_string(destCounter++) + ")" : "") +
+                ": " + dst.string());
+        }
+
+        // Delete destination directory if requested
         if (options.dryRun) LogManager::log(LogLevel::Info, "Dry run enabled – no files will be copied.");
         for (fs::path dst : options.destinations) {
             if (options.deleteTargetFirst) {
@@ -84,6 +103,7 @@ int main(int argc, char* argv[]) {
 
         LogManager::log(LogLevel::Info, "Copying files...");
 
+        // Run the file copy based on selected mode
         switch (options.parallelMode) {
         case ParallelMode::None:
             FileCopier::copyFiltered(options,
@@ -100,6 +120,7 @@ int main(int argc, char* argv[]) {
 
         LogManager::log(LogLevel::Info, "Copy process completed successfully.");
 
+        // Open log file in file browser (if enabled)
         if (options.enableLogging && options.openLog) {
             if (logFile.is_open()) {
                 logFile.close();

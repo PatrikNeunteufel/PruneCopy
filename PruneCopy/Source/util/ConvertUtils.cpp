@@ -8,6 +8,8 @@
 
 #include "ConvertUtils.hpp"
 
+ // Converts a vector of string-based paths into absolute filesystem paths.
+ // Each string is wrapped in a fs::path and made absolute before being added to the result.
 std::vector<fs::path> ConvertUtils::toPaths(const std::vector<std::string>& input) {
     std::vector<fs::path> result;
     for (const auto& s : input) {

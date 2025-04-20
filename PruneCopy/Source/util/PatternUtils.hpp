@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <filesystem>
 
 namespace PatternUtils {
 
@@ -29,7 +30,6 @@ namespace PatternUtils {
      */
     bool matchesPattern(const std::string& filename, const std::vector<std::regex>& patterns);
 
-
     /**
      * @brief Converts a glob pattern to a regex pattern.
      * @param pattern The glob pattern (e.g., "*.hpp")
@@ -44,6 +44,13 @@ namespace PatternUtils {
 	 */
     std::vector<std::regex> convertToRegex(const std::vector<std::string>& patterns);
 
+	/**
+	 * @brief Checks if a directory name matches any of the given exclusion substrings.
+	 * @param dir Directory name to check
+	 * @param excludeDirs Vector of exclusion substrings
+	 * @return true if the directory is excluded, false otherwise
+	 */
+    bool isExcludedDir(const std::filesystem::path& dir, const std::vector<std::string>& excludeDirs);
 
 
 } // namespace PatternUtils

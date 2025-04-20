@@ -75,6 +75,9 @@
     <ClCompile Include="Source\test\FileCopierTest.cpp">
       <Filter>Source\test</Filter>
     </ClCompile>
+    <ClCompile Include="Source\test\ArgumentParseTest.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -116,6 +119,9 @@
     <ClInclude Include="Source\test\FileCopierTest.hpp">
       <Filter>Source\test</Filter>
     </ClInclude>
+    <ClInclude Include="Source\test\ArgumentParseTest.hpp">
+      <Filter>Source\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
@@ -126,6 +132,7 @@
     <None Include="..\changelog.md" />
     <None Include="..\data\version.json" />
     <None Include="..\data\sponsors.json" />
+    <None Include="..\PruneCopy_Comparison_EN.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\debugger_arguments.txt" />

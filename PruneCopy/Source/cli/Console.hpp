@@ -13,27 +13,26 @@
 
 #include "cli/ArgumentParser.hpp"
 
+ // Represents the type of message to be displayed in the console
 enum class MessageType {
-	Info,
-	Warning,
-	Error,
-	Success,
-	Conflict,
-	Skip,
-	Overwrite,
-	Deleted
+	Info,       // General informational message (neutral)
+	Warning,    // Indicates a non-critical issue or caution
+	Error,      // Critical problem that likely stops execution
+	Success,    // Operation completed successfully
+	Conflict,   // Indicates a file or configuration conflict
+	Skip,       // Operation skipped (e.g. due to filters or settings)
+	Overwrite,  // File was overwritten
+	Deleted     // File or directory was deleted
 };
 
-namespace Console {
-
-	/**
-	 * @brief Represents a supporter with a name, URL, and weight.
-	 */
-	struct Supporter {
-		std::string name;
-		std::string url;
-		int weight = 1;
-	};
+// Represents a project supporter (e.g. donor or contributor)
+struct Supporter {
+	std::string name;   // Display name of the supporter
+	std::string url;    // Optional URL (e.g. profile or website)
+	int weight = 1;     // Weight for random selection (higher = more likely to appear)
+};
+class Console {
+public:
 
 	/**
 	 * @brief Prints command-line flags help to the console.
@@ -41,33 +40,48 @@ namespace Console {
 	 * @param flags The list of command-line flags to print.
 	 * @param commandSize The size of the command for formatting.
 	 */
-	void printFlagsHelp(const std::vector<Flag>& flags, int commandSize);
+	static void printFlagsHelp(const std::vector<Flag>& flags, int commandSize);
+
 	/**
-	 * @brief Prints usage/help message to the console. 
+	 * @brief Prints usage/help message to the console.
 	 */
-	void printHelp();
+	static void printHelp();
+
 	/**
 	 * @brief Prints usage/help message to the console.
 	 *
 	 * @param messageType The type of message to print (Info, Warning, Error, etc.).
 	 * @param message The message to print.
 	 */
-	void printUsage();
-	void printUpdate();
+	static void printUsage();
+
+	/**
+	 * @brief Prints the update information to the console.
+	 *
+	 * @param version The version of the update.
+	 * @param changelog The changelog for the update.
+	 */
+	static void printUpdate();
+
 	/**
 	 * @brief Prints version information to the console.
 	 */
-	void printVersion();
+	static void printVersion();
+
 	/**
 	 * @brief Prints about information to the console.
 	 */
-	void printAbout();	
+	static void printAbout();
+
 	/**
 	 * @brief Prints contact information to the console.
 	 */
-	void contactDev();
+	static void contactDev();
 
-	void printDonate();
+	/**
+	 * @brief Prints donation information to the console.
+	 */
+	static void printDonate();
 
 	/**
 	 * @brief Prints a message to the console with the specified message type.
@@ -75,7 +89,7 @@ namespace Console {
 	 * @param messageType The type of message to print (Info, Warning, Error, etc.).
 	 * @param message The message to print.
 	 */
-	void printMessage(MessageType messageType, const std::string& message);
+	static void printMessage(MessageType messageType, const std::string& message);
 
 	/**
 	 * @brief Prints a message to the console with the specified message type and color.
@@ -84,14 +98,15 @@ namespace Console {
 	 * @param message The message to print.
 	 * @param color The color to use for the message.
 	 */
-	std::string inputRequest(const std::string& message, const std::string& defaultValue = "");
+	static std::string inputRequest(const std::string& message, const std::string& defaultValue = "");
 
 	/**
 	 * @brief Prints a random supporter message to the console.
 	 *
 	 * @param allowNetwork If true, allows network-related messages.
 	 */
-	void printRandomSupporter(bool allowNetwork);
+	static void printRandomSupporter(bool allowNetwork);
+
 	/**
 	 * @brief Prints a message to the console with the specified message type and color.
 	 *
@@ -99,5 +114,5 @@ namespace Console {
 	 * @param message The message to print.
 	 * @param color The color to use for the message.
 	 */
-	void printAllSupporters(bool allowNetwork = true);
-}//	namespace Console
+	static void printAllSupporters(bool allowNetwork = true);
+};

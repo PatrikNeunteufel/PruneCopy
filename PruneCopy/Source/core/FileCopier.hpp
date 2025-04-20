@@ -9,26 +9,77 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <regex>
-#include <fstream>
 #include <filesystem>
-#include "cli/ArgumentParser.hpp"
+#include <fstream>
+
+#include "core/PruneOptions.hpp"
+
+/**
+ * @brief Class responsible for copying files based on specified options and filters.
+ */
+class FileCopier {
+public:
+	/**
+	 * @brief Constructs a FileCopier with given options and optional log file output.
+	 *
+	 * @param options The configuration options for file copying.
+	 * @param logFile Optional pointer to an ofstream for logging output.
+	 */
+    explicit FileCopier(const PruneOptions& options, std::ofstream* logFile = nullptr);
+
+	/**
+	 * @brief Executes the file copying operation based on configured source, destination, and filters.
+	 */
+    void execute();
 
 
-namespace FileCopier {
-    bool isExcludedDir(const fs::path& dir, const std::vector<std::string>& excludeDirs);
     /**
-     * @brief Recursively copies files that match inclusion/exclusion patterns.
-     *
-     *
-     * @param typePatterns Regex patterns for file types to include (e.g., *.h, *.hpp).
-     * @param excludeDirs Directories to exclude from copying.
-     * @param optrions Options for copying behavior (e.g., dry run, overwrite).
-     * @param logFile Optional log file stream for logging operations.
+	 * @brief Static helper to execute a filtered copy operation using a FileCopier instance.
+	 * Legacy compatibility (for current testing and CLI integration)
+	 * 
+	 * @param options The configuration options for file copying.
+	 * @param logFile Optional pointer to an ofstream for logging output.
      */
-    void copyFiltered(
-        const PruneOptions& options,
-        std::ofstream* logFile = nullptr
-    );
+    static void copyFiltered(const PruneOptions& options, std::ofstream* logFile = nullptr);
 
-} // namespace FileCopier
+	/**
+	* @brief Checks if a directory is excluded based on the provided exclusion patterns.
+	* 
+	* @param dir The directory path to check.
+	* @param excludeDirs The list of exclusion patterns.
+	* @returns True if the directory is excluded, false otherwise.
+	*/
+    static bool isExcludedDir(const std::filesystem::path& dir, const std::vector<std::string>& excludeDirs);
+
+protected:
+	/** 
+	 * @brief .
+	 * 
+	 * @param srcRoot root path of the source directory
+	 * @param currentFile the current file being processed
+	 * @param destRoot root path of the destination directory
+	 * @return resolved target path for the file
+	 */
+    std::filesystem::path resolveTargetPath(const std::filesystem::path& srcRoot,
+        const std::filesystem::path& currentFile,
+        const std::filesystem::path& destRoot) const;
+
+	/** 
+	 * @brief .
+	 * 
+	 * @param targetFile the target file path
+	 * @return true, if the user wants to overwrite the file
+	 */
+    bool handleOverwritePrompt(const std::filesystem::path& targetFile);
+    
+	/** 
+	 * @brief .
+	 * 
+	 * @param path log the path of the copied file
+	 */
+	void logCopy(const std::filesystem::path& path);
+
+protected:
+	const PruneOptions& m_options;		///< The configuration options for file copying. >
+	std::ofstream* m_logFile;			///< Optional pointer to an ofstream for logging output. >
+};
