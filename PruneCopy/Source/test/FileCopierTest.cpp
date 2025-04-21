@@ -15,7 +15,8 @@
 #include <thread>
 #include <chrono>
 
- // Runs all test cases related to the FileCopier module
+ 
+// Executes all test cases related to FileCopier functionality
 bool FileCopierTest::run() {
     bool success = true;
 
@@ -28,8 +29,14 @@ bool FileCopierTest::run() {
     // Test file pattern matching logic
     success &= testMatchesPattern();
 
-    // Additional test for overwrite prompt logic (disabled by default)
-    // success &= testOverwriteFalsify(); // Uncomment to test overwrite falsification
+    // Test flatten-suffix prefix behavior
+    success &= testFlattenSuffixNaming();
+
+    // Test auto-renaming logic in flatten mode
+    success &= testFlattenAutoRename();
+
+    // Optional: deliberately failing overwrite test
+    // success &= testOverwriteFalsify();
 
     if (success)
         std::cout << "[FileCopierTest] All tests passed!" << std::endl;
@@ -38,7 +45,6 @@ bool FileCopierTest::run() {
 
     return success;
 }
-
 // Sets up a temporary test folder structure with files and subdirectories
 void FileCopierTest::setupTestEnvironment(const fs::path& testRoot, const fs::path& srcDir) {
     fs::remove_all(testRoot);
@@ -223,5 +229,66 @@ bool FileCopierTest::testOverwriteFalsify() {
     }
 
     cleanupTestEnvironment(testRoot);
+    return ok;
+}
+
+// Tests that flatten-suffix does not apply a prefix to root-level files
+// but adds a directory-based prefix for files in subdirectories
+bool FileCopierTest::testFlattenSuffixNaming() {
+    const fs::path testRoot = "test_flatten_suffix";
+    const fs::path srcDir = testRoot / "src";
+    const fs::path dstDir = testRoot / "out";
+
+    fs::remove_all(testRoot);
+    fs::create_directories(srcDir / "core");
+
+    std::ofstream(srcDir / "rootfile.txt") << "root";
+    std::ofstream(srcDir / "core" / "corefile.txt") << "core";
+
+    PruneOptions options;
+    options.sources = { srcDir };
+    options.destinations = { dstDir };
+    options.flatten = true;
+    options.flattenWithSuffix = true;
+    options.typePatterns = PatternUtils::wildcardsToRegex({ "*.txt" });
+
+    FileCopier::copyFiltered(options);
+
+    bool ok = true;
+    ok &= TestUtils::assertTrue(fs::exists(dstDir / "rootfile.txt"), "Root file should not have prefix");
+    ok &= TestUtils::assertTrue(fs::exists(dstDir / "core_corefile.txt"), "File in subdir should have prefix");
+
+    fs::remove_all(testRoot);
+    return ok;
+}
+
+// Tests automatic renaming logic in flatten mode
+// Ensures that name conflicts are resolved via (1), (2), ... suffix
+bool FileCopierTest::testFlattenAutoRename() {
+    const fs::path testRoot = "test_flatten_autorename";
+    const fs::path srcDir = testRoot / "src";
+    const fs::path dstDir = testRoot / "out";
+
+    fs::remove_all(testRoot);
+    fs::create_directories(srcDir / "a");
+    fs::create_directories(srcDir / "b");
+
+    std::ofstream(srcDir / "a" / "same.txt") << "from A";
+    std::ofstream(srcDir / "b" / "same.txt") << "from B";
+
+    PruneOptions options;
+    options.sources = { srcDir };
+    options.destinations = { dstDir };
+    options.flatten = true;
+    options.flattenAutoRename = true;
+    options.typePatterns = PatternUtils::wildcardsToRegex({ "*.txt" });
+
+    FileCopier::copyFiltered(options);
+
+    bool ok = true;
+    ok &= TestUtils::assertTrue(fs::exists(dstDir / "same.txt"), "First file exists");
+    ok &= TestUtils::assertTrue(fs::exists(dstDir / "same(1).txt"), "Second file renamed");
+
+    fs::remove_all(testRoot);
     return ok;
 }

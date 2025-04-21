@@ -19,55 +19,68 @@
 
 namespace fs = std::filesystem;
 
-// Constructs a FileCopier with given options and optional log file output
+// Constructor
+// Initializes the FileCopier with given options and optional log file
 FileCopier::FileCopier(const PruneOptions& options, std::ofstream* logFile)
     : m_options(options), m_logFile(logFile) {
 }
 
-
-// Executes the file copying operation based on configured source, destination, and filters
+// Main execution method
+// Iterates through sources and applies filtering, copying and logging logic
 void FileCopier::execute() {
-    // Iterate over all source directories
     for (const auto& src : m_options.sources) {
         for (auto it = fs::recursive_directory_iterator(src); it != fs::recursive_directory_iterator(); ++it) {
             const auto& entry = *it;
 
-            // Skip excluded directories (and prevent descent into them)
+            // Skip excluded directories
             if (entry.is_directory() && PatternUtils::isExcludedDir(entry.path(), m_options.excludeDirs)) {
                 LogManager::log(LogType::Skipped, entry.path().string(), m_logFile);
                 it.disable_recursion_pending();
                 continue;
             }
 
-            // Process only regular files
+            // Only process regular files
             if (!entry.is_regular_file()) continue;
 
             const std::string filename = entry.path().filename().string();
 
-            // Skip non-matching types
+            // Filter by allowed file types
             if (!m_options.typePatterns.empty() &&
                 !PatternUtils::matchesPattern(filename, m_options.typePatterns)) {
                 continue;
             }
 
-            // Skip excluded files (and log once)
+            // Filter excluded files
             if (!m_options.excludeFilePatterns.empty() &&
                 PatternUtils::matchesPattern(filename, m_options.excludeFilePatterns)) {
                 LogManager::log(LogType::Skipped, entry.path().string(), m_logFile);
                 continue;
             }
 
-            // Copy to all destinations
+            // Copy file to all destinations
             for (const auto& dst : m_options.destinations) {
                 fs::path targetFile = resolveTargetPath(src, entry.path(), dst);
 
-                // Overwrite checks
+                // File exists → resolve based on overwrite flags
                 if (fs::exists(targetFile)) {
-                    if (m_options.noOverwrite) continue;
-                    if (!m_options.forceOverwrite && !handleOverwritePrompt(targetFile)) continue;
+                    if (m_options.noOverwrite) {
+                        continue; // skip silently without any prompt
+                    }
+                    else if (m_options.forceOverwrite) {
+                        // Do nothing: overwrite directly
+                    }
+                    else if (m_options.flatten) {
+                        if (!handleFlattenConflictPrompt(targetFile)) {
+                            continue; // user skipped or canceled
+                        }
+                    }
+                    else {
+                        // Normal mode → prompt via classic handler
+                        if (!handleOverwritePrompt(targetFile)) continue;
+                    }
                 }
 
-                // Copy (unless dry-run)
+                // Perform copy unless dry-run is active
                 if (!m_options.dryRun) {
                     fs::create_directories(targetFile.parent_path());
                     fs::copy_file(entry.path(), targetFile, fs::copy_options::overwrite_existing);
@@ -80,85 +93,159 @@ void FileCopier::execute() {
     }
 }
 
-
-
-// Resolves the final destination path for a given file, based on options and mode
+// Resolves the destination path for a file, considering flatten options
 fs::path FileCopier::resolveTargetPath(const fs::path& srcRoot, const fs::path& currentFile, const fs::path& destRoot) const {
-    // Compute relative path from source root to current file
     fs::path relPath = fs::relative(currentFile, srcRoot);
 
-    // If flattening is enabled, discard directory structure
+    // Flatten mode discards folder structure
     if (m_options.flatten) {
         std::string filename = currentFile.filename().string();
 
+        // Add flattened suffix from folder structure
         if (m_options.flattenWithSuffix) {
-            // Build prefix from original folder structure to avoid name collisions
-            std::string prefix = relPath.parent_path().string();
-            std::replace(prefix.begin(), prefix.end(), '\\', '_');
-            std::replace(prefix.begin(), prefix.end(), '/', '_');
-            filename = prefix + "_" + filename;
+            std::string prefix;
+            if (!relPath.parent_path().empty()) {
+                prefix = relPath.parent_path().string();
+                std::replace(prefix.begin(), prefix.end(), '\\', '_');
+                std::replace(prefix.begin(), prefix.end(), '/', '_');
+                filename = prefix + "_" + filename;
+            }
         }
 
-        // Place all files directly into the destination folder
         return destRoot / filename;
     }
 
-    // Preserve original directory structure under destination root
+    // Normal mode: preserve relative path under destination
     return destRoot / relPath;
 }
 
-
-// Prompts the user how to handle an existing file when overwrite is not forced
+// Prompts the user to confirm file overwrite unless forced globally
 bool FileCopier::handleOverwritePrompt(const fs::path& targetFile) {
     while (true) {
-        // Display interactive conflict prompt
-        LogManager::logAlwaysToConsole(LogType::Conflict, targetFile.string() + " - overwrite? [y]es / [n]o / [a]ll / [s]kip all / [c]ancel:");
-
+		std::string msg = targetFile.string() + " already exists. [y]es / [n]o / [a]ll / [s]kip all / [c]ancel:";
+        LogManager::logAlwaysToConsole(LogType::Conflict, msg);
+        LogManager::log(LogType::Conflict, msg, m_logFile); 
         std::string input;
         std::getline(std::cin, input);
         LogManager::log(LogType::UserInput, "User entered: " + input, m_logFile);
 
         if (input.empty()) continue;
 
-        // Convert first character to lowercase for comparison
         char answer = std::tolower(input[0]);
 
         switch (answer) {
-        case 'y': return true;  // Overwrite this file
-        case 'n': return false; // Skip this file
+        case 'y': return true;
+        case 'n': return false;
         case 'a':
-            // Apply overwrite to all future conflicts
             const_cast<PruneOptions&>(m_options).forceOverwrite = true;
             return true;
         case 's':
-            // Skip all future overwrites
             const_cast<PruneOptions&>(m_options).noOverwrite = true;
             return false;
         case 'c':
-            // Abort the entire operation immediately
             LogManager::log(LogType::Aborted, "Operation cancelled by user.", m_logFile);
             exit(0);
         default:
-            continue; // Invalid input → repeat prompt
+            continue;
+        }
+    }
+}
+
+// Prompts user for flatten conflict resolution with suggested name and extended options
+bool FileCopier::handleFlattenConflictPrompt(std::filesystem::path& targetFile) {
+    const fs::path suggested = resolveFileNameConflict(targetFile);
+
+    // Auto-rename mode: no interaction
+    if (m_options.flattenAutoRename) {
+        targetFile = suggested;
+        return true;
+    }
+
+    while (true) {
+        std::string msg = targetFile.string() +
+            " already exists. [o]verwrite / [r]ename / [s]kip / [c]ancel / [a]lways overwrite / [m] Auto-rename all\n" +
+            "Suggested rename: " + suggested.filename().string();
+
+        LogManager::logAlwaysToConsole(LogType::Conflict, msg);
+        LogManager::log(LogType::Conflict, msg, m_logFile); 
+        std::string input;
+        std::getline(std::cin, input);
+        LogManager::log(LogType::UserInput, "User entered: " + input, m_logFile);
+
+        if (input.empty()) continue;
+        char choice = std::tolower(input[0]);
+
+        switch (choice) {
+        case 'o':
+            return true; // Overwrite
+        case 'r': {
+            LogManager::logAlwaysToConsole(LogType::Conflict, "Enter new filename (leave blank to use suggested):");
+            std::string newName;
+            std::getline(std::cin, newName);
+            if (!newName.empty()) {
+                fs::path candidate = targetFile.parent_path() / newName;
+                // Recursively check if new name also exists
+                while (fs::exists(candidate)) {
+                    LogManager::logAlwaysToConsole(LogType::Conflict, candidate.string() + " also exists. Enter different name:");
+                    std::getline(std::cin, newName);
+                    if (newName.empty()) break; // fallback to suggestion
+                    candidate = targetFile.parent_path() / newName;
+                }
+                targetFile = candidate;
+            }
+            else {
+                targetFile = suggested;
+            }
+            return true;
+        }
+        case 's':
+            return false; // Skip file
+        case 'c':
+            LogManager::log(LogType::Aborted, "Operation cancelled by user.", m_logFile);
+            exit(0);
+        case 'a':
+            const_cast<PruneOptions&>(m_options).forceOverwrite = true;
+            return true;
+        case 'm':
+            const_cast<PruneOptions&>(m_options).flattenAutoRename = true;
+            targetFile = suggested;
+            return true;
+        default:
+            continue; // Repeat on invalid input
         }
     }
 }
 
 
-// Logs a successful file copy operation to console and/or file
+
+// Logs a successful copy operation to log file and/or console
 void FileCopier::logCopy(const fs::path& path) {
-    //LogManager::log(LogType::Copied, path.string(), m_logFile); // legacy
     LogManager::log(LogType::Copied, path.string(), m_logFile);
 }
 
-// Wrapper for exclusion check (used for compatibility or testing) LEGACY
+// Resolves name conflict by appending (1), (2), ... to filename until free
+fs::path FileCopier::resolveFileNameConflict(const fs::path& originalPath) const {
+    fs::path base = originalPath.parent_path();
+    std::string stem = originalPath.stem().string();
+    std::string ext = originalPath.extension().string();
+
+    int counter = 1;
+    fs::path newPath;
+    do {
+        newPath = base / fs::path(stem + "(" + std::to_string(counter) + ")" + ext);
+        ++counter;
+    } while (fs::exists(newPath));
+
+    return newPath;
+}
+
+// Wrapper for directory exclusion check
 bool FileCopier::isExcludedDir(const fs::path& dir, const std::vector<std::string>& excludeDirs) {
     return PatternUtils::isExcludedDir(dir, excludeDirs);
 }
 
-// Static helper to execute a filtered copy operation using a FileCopier instance LEGACY
+// Static legacy interface to perform copy operation
 void FileCopier::copyFiltered(const PruneOptions& options, std::ofstream* logFile) {
     FileCopier copier(options, logFile);
     copier.execute();
 }
-

@@ -111,12 +111,21 @@ namespace TestUtils {
         }
     }
 
+    void printPass(const std::string& message);
+
+    void printFail(const std::string& message);
+
+
+    void printInfo(const std::string& message);
+    
+    void printSection(const std::string& title);
+
     /**
      * @brief Asserts that a given condition is true.
      *
      * @param condition Boolean expression to evaluate
      * @param message A description for the test case
-     * @return True if the condition is true, false otherwise
+     * @return True if the condition is true, false otherwise 
      */
     bool assertTrue(bool condition, const std::string& message = "");
 
@@ -130,15 +139,15 @@ namespace TestUtils {
     bool assertFalse(bool condition, const std::string& message = "");
 
     /**
- * @brief Asserts that the given haystack string contains the needle substring.
- *
- * This function is isolated from toString() and works only with std::string.
- *
- * @param haystack The full string to search in
- * @param needle The substring to search for
- * @param testName Descriptive name of the test
- * @return True if the substring is found, false otherwise
- */
+     * @brief Asserts that the given haystack string contains the needle substring.
+     *
+     * This function is isolated from toString() and works only with std::string.
+     *
+     * @param haystack The full string to search in
+     * @param needle The substring to search for
+     * @param testName Descriptive name of the test
+     * @return True if the substring is found, false otherwise
+     */
 bool assertContains(const std::string& haystack, const std::string& needle, const std::string& testName);
 
 } // namespace TestUtils

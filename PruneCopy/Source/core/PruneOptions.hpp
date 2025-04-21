@@ -72,6 +72,7 @@ struct PruneOptions {
 
     bool flatten = false;                        // Copy all files into a single target folder
     bool flattenWithSuffix = false;              // Flatten with path-based filename suffixes to prevent conflicts
+	bool flattenAutoRename = false;              // Automatically rename files in flatten mode to avoid conflicts
 
     ParallelMode parallelMode = ParallelMode::None; // Selected parallelization strategy
     ColorMode colorMode = ColorMode::Auto;          // Console color output setting

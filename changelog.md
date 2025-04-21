@@ -1,5 +1,10 @@
 # changelog
 
+## V 1.0.4 - 2025-04-21
+- added `--flatten` to flatten the directory structure in the destination
+- added `--flatten-suffix` to add a suffix to the flattened files
+- - added `--flatten-auto-rename` to automatically rename files if they already exist in the destination
+
 ## V 1.0.3 - 2025-04-21
 - change structure for fileCopier to prepare reusability for the other copying methods
 - moved isExcludedDir() methode from fileCopier to PatternUtils

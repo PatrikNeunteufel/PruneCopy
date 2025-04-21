@@ -1,9 +1,9 @@
 {
   "Major": 1,
   "Minor": 0,
-  "Patch": 3,
-  "Build": 4720,
+  "Patch": 4,
+  "Build": 4740,
   "Date": "2025-04-21",
-  "Description": "now with presets",
+  "Description": "now you can flatten the directory",
   "URL": "https://github.com/patrikNeunteufel/PruneCopy"
 }

@@ -63,8 +63,9 @@ std::vector<Flag> optionFlags = {
     {"--log-dir", "", FlagType::Option, FlagValueType::Value,"<path>", "Write operations to a log file in the specified folder"},
     {"--log-open", "",FlagType::Option ,FlagValueType::No_Value,"","Open the log file after the operation (only when --log-dir <path> is set )"},
     {"--log-level", "", FlagType::Option, FlagValueType::Value, "<level>", "Set console log level: All, Standard, Info, Warning, Error, None"},
-    {"--flatten", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Copy all files into a single target directory"},
-    {"--flatten-suffix", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Same as --flatten but adds suffixes(e.g.folders) to prevent name clashes"},
+    {"--flatten", "", FlagType::Option, FlagValueType::No_Value, "", "Copy all files into a single target directory"},
+    {"--flatten-auto-rename", "", FlagType::Option, FlagValueType::No_Value, "", "automatically rename conflict files (filename(1).ext), affect only with --flatten flag"},
+    {"--flatten-suffix", "", FlagType::Option, FlagValueType::No_Value, "", "Same as --flatten but adds suffixes(e.g.folders) to prevent name clashes"},
     {"--parallel-async", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use async-based parallel file copying"},
     {"--parallel-thread", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use threaded parallel file copying"},
     {"--parallel-openMP", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use OpenMP for parallel copying"},
@@ -175,6 +176,7 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options, Parsed
     options.noOverwrite = hasFlag(argc, argv, "--no-overwrite");
     options.forceOverwrite = hasFlag(argc, argv, "--force-overwrite");
     options.flatten = hasFlag(argc, argv, "--flatten") || hasFlag(argc, argv, "--flatten-suffix");
+    options.flattenAutoRename = hasFlag(argc, argv, "--flatten-auto-rename");
     options.flattenWithSuffix = hasFlag(argc, argv, "--flatten-suffix");
     options.deleteTargetFirst = hasFlag(argc, argv, "--delete-target-first");
     options.quiet = hasFlag(argc, argv, "--cmdln-out-off");

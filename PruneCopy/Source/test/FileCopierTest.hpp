@@ -59,4 +59,14 @@ private:
      * @param testRoot The root path of the test environment to delete.
      */
     static void cleanupTestEnvironment(const fs::path& testRoot);
+    
+    /**
+     * @brief Tests flatten-suffix naming behavior.
+     */
+    static bool testFlattenSuffixNaming();
+
+    /**
+     * @brief Tests auto-renaming behavior in flatten mode.
+     */
+    static bool testFlattenAutoRename();
 };
