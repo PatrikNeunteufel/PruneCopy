@@ -37,7 +37,7 @@ void Console::printFlagsHelp(const std::vector<Flag>& flags, int commandSize) {
             left += " " + flag.valueRepresentation;
         }
         std::cout << std::left << std::setw(commandSize) << left
-            << flag.description << '\n';
+            << ((flag.deprecated) ? "[DEPREDATED] " : "") << flag.description << ((flag.deprecated) ? ", use instead: " : "") << flag.replacement.value_or("")  << '\n';
     }
 }
 
