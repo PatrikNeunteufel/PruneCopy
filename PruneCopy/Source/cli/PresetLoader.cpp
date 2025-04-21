@@ -1,4 +1,4 @@
-/*****************************************************************//**
+﻿/*****************************************************************//**
  * @file   PresetLoader.cpp
  * @brief  Implements loading, saving and listing of PruneCopy presets.
  *         Presets are stored as simple JSON files containing CLI args.
@@ -22,10 +22,31 @@ namespace fs = std::filesystem;
 using json = nlohmann::json;
 #endif
 
+// Helper function to get environment variable (TODO: move later to a better utils)
+std::optional<std::string> getEnvVar(const char* name) {
+    char* buffer = nullptr;
+    size_t size = 0;
+    if (_dupenv_s(&buffer, &size, name) == 0 && buffer != nullptr) {
+        std::string result(buffer);
+        free(buffer); // _dupenv_s allokiert mit malloc → mit free freigeben
+        return result;
+    }
+    return std::nullopt;
+}
+
+
 // Static helper to resolve preset directory
 fs::path PresetLoader::getPresetDir() {
-    return fs::current_path() / "presets";
+    if (auto env = getEnvVar("PRUNECOPY_PRESET_DIR")) {
+        return fs::path(*env);
+    }
+#ifdef _WIN32
+    return fs::path(*getEnvVar("APPDATA")) / "PruneCopy" / "presets";
+#else
+    return fs::path(*getEnvVar("HOME")) / ".config" / "prunecopy" / "presets";
+#endif
 }
+
 
 std::optional<PruneOptions> PresetLoader::loadPreset(const std::string& name) {
 #ifndef atwork
