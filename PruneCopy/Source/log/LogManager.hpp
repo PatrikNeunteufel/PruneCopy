@@ -1,6 +1,7 @@
 ﻿/*****************************************************************//**
  * @file   LogManager.hpp
- * @brief  Provides logging utilities for console and file output
+ * @brief  Central logging facility for both console and file output,
+ *         with log level filtering and optional ANSI color support.
  * 
  * @author Patrik Neunteufel
  * @date   April 2025
@@ -52,13 +53,15 @@ public:
     static void setLogFile(std::ofstream* file);
 
 	/**
-	* @brief enables or disables ANSI color codes for console output
+	* @brief Enables or disables ANSI color codes for console output
 	* @param mode The desired color mode (e.g. ColorMode::Auto)
     */
     static void enableAnsiColorsIfSupported(ColorMode mode);
 
     /** 
-	 * @brief log the message to the console and the log file deopending on the logtype
+	 * @brief Logs a message using the given log type.
+     *        Will appear on console if the log level allows it, and is always written to file if enabled.
+
      * 
 	 * @param type log type (Info, Success, Copied, Overwritten, Skipped, Deleted, Conflict, Aborted, Error, UserInput)
 	 * @param message the message to log
@@ -67,31 +70,15 @@ public:
     static void log(LogType type, const std::string& message, std::ostream* stream = &std::cout);
     
 	/** 
-	 * @brief log the message to the console and the log file depending on the loglevel
+	 * @brief Logs a message using the given log level.
+     *        Will appear on console if the log level allows it, and is always written to file if enabled.
+
 	 * 
 	 * @param level log level (All, Standard, Info, Warning, Error, None)
 	 * @param message the message to log
 	 * @param stream the output stream to log to (default is std::cout)
 	 */
     static void log(LogLevel level, const std::string& message, std::ostream* stream = &std::cout);
-    
-    /** 
-	 * @brief log the message to the console and the log file in any case
-     * 
-	 * @param type log type (Info, Success, Copied, Overwritten, Skipped, Deleted, Conflict, Aborted, Error, UserInput)
-	 * @param msg the message to log
-	 * @param logFile the output file stream to log to (default is nullptr)
-     */
-    static void logToAll(LogType type, const std::string& msg, std::ostream* logFile);
-    
-    /**
-     * @brief log the message to the console and the log file in any case
-     *
-	 * @param level log level (All, Standard, Info, Warning, Error, None)
-     * @param msg the message to log
-     * @param logFile the output file stream to log to (default is nullptr)
-     */
-    static void logToAll(LogLevel level, const std::string& msg, std::ostream* logFile);
 	
     /** 
 	 * @brief log the message to the console

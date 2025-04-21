@@ -101,7 +101,39 @@ int main(int argc, char* argv[]) {
             }
         }
 
+
+        // Log included file patterns (types)
+        if (!options.types.empty()) {
+            std::string joinedTypes;
+            for (const auto& type : options.types) {
+                if (!joinedTypes.empty()) joinedTypes += ", ";
+                joinedTypes += type;
+            }
+            LogManager::log(LogLevel::Info, "Included file patterns: " + joinedTypes);
+        }
+
+        // Log excluded directories
+        if (!options.excludeDirs.empty()) {
+            std::string joinedDirs;
+            for (const auto& dir : options.excludeDirs) {
+                if (!joinedDirs.empty()) joinedDirs += ", ";
+                joinedDirs += dir;
+            }
+            LogManager::log(LogLevel::Info, "Excluded directories: " + joinedDirs);
+        }
+
+        // Log excluded file patterns
+        if (!options.excludeFiles.empty()) {
+            std::string joinedFiles;
+            for (const auto& pattern : options.excludeFiles) {
+                if (!joinedFiles.empty()) joinedFiles += ", ";
+                joinedFiles += pattern;
+            }
+            LogManager::log(LogLevel::Info, "Excluded file patterns: " + joinedFiles);
+        }
+
         LogManager::log(LogLevel::Info, "Copying files...");
+
 
         // Run the file copy based on selected mode
         switch (options.parallelMode) {

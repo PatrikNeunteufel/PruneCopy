@@ -143,71 +143,55 @@ bool LogManager::shouldLog(LogLevel level) {
     return level >= s_consoleLogLevel;
 }
 
-// Logs a message of a given LogType to the provided stream (e.g., std::cout) and/or log file
+// Logs a message using a LogType, applying color for console output.
+// Console output is filtered by log level; log file always receives full output.
 void LogManager::log(LogType type, const std::string& message, std::ostream* stream) {
-    LogLevel level = logLevelFromType(type); // Map LogType to LogLevel
+    LogLevel level = logLevelFromType(type);
 
-    // Skip logging if current level is below configured threshold
-    if (!shouldLog(level)) return;
+    std::string rawTag = tagFromType(type);              // Aligned tag (e.g., [Copied   ])
+    std::string coloredTag = applyColor(level, rawTag);  // Apply color for terminal output
 
-    std::string rawTag = tagFromType(type);           // Get padded label tag
-    std::string coloredTag = applyColor(level, rawTag); // Apply color if supported
-
-    // Write to console (with color) only if stream is explicitly std::cout
+    // Only show on console if log level permits
     if (stream && stream == &std::cout && shouldLog(level)) {
         *stream << coloredTag << " " << message << std::endl;
     }
 
-    // Always log to file if file logging is active
+    // Always write to log file if enabled
     if (s_logFile && s_logFile->is_open()) {
         *s_logFile << rawTag << " " << message << std::endl;
     }
 }
 
 
-// Logs a message using a raw LogLevel instead of LogType (e.g. internal or fallback usage)
-void LogManager::log(LogLevel level, const std::string& message, std::ostream* stream) {
-    // Skip if log level is below the configured threshold
-    if (!shouldLog(level)) return;
 
-    // Generate label based on log level
+// Logs a message using a raw LogLevel (fallback or custom cases).
+// Console output is filtered by configured log level; file output is always written.
+void LogManager::log(LogLevel level, const std::string& message, std::ostream* stream) {
     std::string label;
     switch (level) {
     case LogLevel::Info:     label = "Info"; break;
     case LogLevel::Warning:  label = "Warning"; break;
     case LogLevel::Error:    label = "Error"; break;
     case LogLevel::Standard: label = "Standard"; break;
-    default:                 label = "Log"; break; // For LogLevel::All, None, or unknown
+    default:                 label = "Log"; break;
     }
 
-    // Format tag with padding for alignment
     std::ostringstream oss;
     oss << "[" << std::left << std::setw(getMaxLogLabelLength()) << label << "]";
     std::string rawTag = oss.str();
     std::string coloredTag = applyColor(level, rawTag);
 
-    // Output to console (with color) if stream is explicitly std::cout
+    // Log to console if level is allowed
     if (stream && stream == &std::cout && shouldLog(level)) {
         *stream << coloredTag << " " << message << std::endl;
     }
 
-    // Always log to file (uncolored)
+    // Always log to file
     if (s_logFile && s_logFile->is_open()) {
         *s_logFile << rawTag << " " << message << std::endl;
     }
 }
 
-// Logs a message of given LogType to both console and optional log file
-void LogManager::logToAll(LogType type, const std::string& msg, std::ostream* logFile) {
-    LogManager::log(type, msg, &std::cout);   // Log to console
-    LogManager::log(type, msg, logFile);      // Log to file if provided
-}
-
-// Logs a message of given LogLevel to both console and optional log file
-void LogManager::logToAll(LogLevel level, const std::string& msg, std::ostream* logFile) {
-    LogManager::log(level, msg, &std::cout);  // Log to console
-    LogManager::log(level, msg, logFile);     // Log to file if provided
-}
 
 // Logs a message directly to the console, regardless of current log level (using LogType)
 void LogManager::logAlwaysToConsole(LogType type, const std::string& message) {

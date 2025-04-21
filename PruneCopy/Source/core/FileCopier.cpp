@@ -29,13 +29,12 @@ FileCopier::FileCopier(const PruneOptions& options, std::ofstream* logFile)
 void FileCopier::execute() {
     // Iterate over all source directories
     for (const auto& src : m_options.sources) {
-        // Recursively traverse each directory
         for (auto it = fs::recursive_directory_iterator(src); it != fs::recursive_directory_iterator(); ++it) {
             const auto& entry = *it;
 
             // Skip excluded directories (and prevent descent into them)
             if (entry.is_directory() && PatternUtils::isExcludedDir(entry.path(), m_options.excludeDirs)) {
-                LogManager::logToAll(LogType::Skipped, entry.path().string(), m_logFile);
+                LogManager::log(LogType::Skipped, entry.path().string(), m_logFile);
                 it.disable_recursion_pending();
                 continue;
             }
@@ -45,36 +44,42 @@ void FileCopier::execute() {
 
             const std::string filename = entry.path().filename().string();
 
-            // If include patterns are defined, skip files that do not match
+            // Skip non-matching types
             if (!m_options.typePatterns.empty() &&
-                !PatternUtils::matchesPattern(filename, m_options.typePatterns)) continue;
+                !PatternUtils::matchesPattern(filename, m_options.typePatterns)) {
+                continue;
+            }
 
-            // Skip files that match any exclude pattern
+            // Skip excluded files (and log once)
             if (!m_options.excludeFilePatterns.empty() &&
-                PatternUtils::matchesPattern(filename, m_options.excludeFilePatterns)) continue;
+                PatternUtils::matchesPattern(filename, m_options.excludeFilePatterns)) {
+                LogManager::log(LogType::Skipped, entry.path().string(), m_logFile);
+                continue;
+            }
 
-            // Iterate over all destination directories
+            // Copy to all destinations
             for (const auto& dst : m_options.destinations) {
                 fs::path targetFile = resolveTargetPath(src, entry.path(), dst);
 
-                // Handle overwrite scenarios
+                // Overwrite checks
                 if (fs::exists(targetFile)) {
                     if (m_options.noOverwrite) continue;
                     if (!m_options.forceOverwrite && !handleOverwritePrompt(targetFile)) continue;
                 }
 
-                // Perform copy unless in dry-run mode
+                // Copy (unless dry-run)
                 if (!m_options.dryRun) {
                     fs::create_directories(targetFile.parent_path());
                     fs::copy_file(entry.path(), targetFile, fs::copy_options::overwrite_existing);
                 }
 
                 // Log successful copy
-                LogManager::logToAll(LogType::Copied, targetFile.string(), m_logFile);
+                LogManager::log(LogType::Copied, targetFile.string(), m_logFile);
             }
         }
     }
 }
+
 
 
 // Resolves the final destination path for a given file, based on options and mode
@@ -111,7 +116,7 @@ bool FileCopier::handleOverwritePrompt(const fs::path& targetFile) {
 
         std::string input;
         std::getline(std::cin, input);
-        LogManager::logToAll(LogType::UserInput, "User entered: " + input, m_logFile);
+        LogManager::log(LogType::UserInput, "User entered: " + input, m_logFile);
 
         if (input.empty()) continue;
 
@@ -131,7 +136,7 @@ bool FileCopier::handleOverwritePrompt(const fs::path& targetFile) {
             return false;
         case 'c':
             // Abort the entire operation immediately
-            LogManager::logToAll(LogType::Aborted, "Operation cancelled by user.", m_logFile);
+            LogManager::log(LogType::Aborted, "Operation cancelled by user.", m_logFile);
             exit(0);
         default:
             continue; // Invalid input → repeat prompt
@@ -143,7 +148,7 @@ bool FileCopier::handleOverwritePrompt(const fs::path& targetFile) {
 // Logs a successful file copy operation to console and/or file
 void FileCopier::logCopy(const fs::path& path) {
     //LogManager::log(LogType::Copied, path.string(), m_logFile); // legacy
-    LogManager::logToAll(LogType::Copied, path.string(), m_logFile);
+    LogManager::log(LogType::Copied, path.string(), m_logFile);
 }
 
 // Wrapper for exclusion check (used for compatibility or testing) LEGACY

@@ -10,6 +10,9 @@
 - added more log levels, they now work hirarchically All > Standard > Info > Warning > Error > None
 - added LogLevel to PruneOptions ti centralize the log level for the whole program
 - cleanup the comments and added doxygen comments
+- fixed log to show excluded files and directories only once per source not per destination
+- info for included files and also excluded directories and files are now shown in the log
+- add some more comming feature for presets
 
 ## V 1.0.2 - 2025-04-11
 - changed log color only for message tag

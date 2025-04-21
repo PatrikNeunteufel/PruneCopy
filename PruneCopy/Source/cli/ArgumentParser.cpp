@@ -68,7 +68,12 @@ std::vector<Flag> optionFlags = {
     {"--parallel-thread", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use threaded parallel file copying"},
     {"--parallel-openMP", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use OpenMP for parallel copying"},
     {"--color", "", FlagType::Option, FlagValueType::Value,"<mode>", "Console color output: auto (default), always, never"},
-    {"--dry-run", "", FlagType::Option, FlagValueType::No_Value, "", "Show what would be copied without doing it"}
+    {"--dry-run", "", FlagType::Option, FlagValueType::No_Value, "", "Show what would be copied without doing it"},
+    {"--preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Load and execute a named preset from ./presets/<name>.json"},
+    {"--save-preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Save current settings to ./presets/<name>.json"},
+    {"--list-presets", "", FlagType::Option, FlagValueType::No_Value, "", "(coming feature) List all available presets in the ./presets folder"},
+    {"--show-preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Print the CLI equivalent of the preset"},
+    {"--dump-options", "", FlagType::Option, FlagValueType::No_Value, "", "(coming feature) Dump current config as JSON (for CI/debugging)"}
 };
 
 

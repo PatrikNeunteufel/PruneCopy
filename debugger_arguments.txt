@@ -8,8 +8,8 @@
 
 // multiple destinations
 ../testing/Source --destination ../testing/testDestination ../testing/testDestination2 --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.* --force-overwrite --log-dir ../testing/logs --log-open
-../testing/Source --destination ../testing/testDestination ../testing/testDestination2 --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.* --force-overwrite --log-dir ../testing/logs --log-open  --log-level standard --cmdln-out-off
-
+../testing/Source --destination ../testing/testDestination ../testing/testDestination2 --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.* --force-overwrite --log-dir ../testing/logs --log-open  --log-level standard
+../testing/Source --destination ../testing/testDestination ../testing/testDestination2 --types *.h *.hpp --exclude-dirs Pch EntryPoint --exclude-files *Impl.* --force-overwrite --log-level all   --log-dir ../testing/logs --log-open  --cmdln-out-off
 // info strings
 --about
 --help
