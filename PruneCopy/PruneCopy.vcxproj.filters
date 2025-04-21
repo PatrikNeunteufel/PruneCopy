@@ -31,6 +31,12 @@
     <Filter Include="Source\test">
       <UniqueIdentifier>{0667e842-cacf-4a1e-bc96-1b36fc18dcf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".github">
+      <UniqueIdentifier>{c475612a-8f2d-4b2e-9202-c9a0f5f5778f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".github\ISSUE_TEMPLATE">
+      <UniqueIdentifier>{152aef3d-6fea-47b5-89fd-2e046ae9f40b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -141,10 +147,31 @@
     <None Include="..\LICENSE" />
     <None Include="..\README.md" />
     <None Include="..\installer\installer.iss" />
-    <None Include="..\changelog.md" />
+    <None Include="..\CHANGELOG.md" />
     <None Include="..\data\version.json" />
     <None Include="..\data\sponsors.json" />
     <None Include="..\PruneCopy_Comparison_EN.md" />
+    <None Include="..\.github\CODE_OF_CONDUCT.md">
+      <Filter>.github</Filter>
+    </None>
+    <None Include="..\.github\CONTRIBUTING.md">
+      <Filter>.github</Filter>
+    </None>
+    <None Include="..\.github\PULL_REQUEST_TEMPLATE.md">
+      <Filter>.github</Filter>
+    </None>
+    <None Include="..\.github\SECURITY.md">
+      <Filter>.github</Filter>
+    </None>
+    <None Include="..\.github\ISSUE_TEMPLATE\bug_report.yml">
+      <Filter>.github\ISSUE_TEMPLATE</Filter>
+    </None>
+    <None Include="..\.github\ISSUE_TEMPLATE\feature_request.yml">
+      <Filter>.github\ISSUE_TEMPLATE</Filter>
+    </None>
+    <None Include="..\.github\ISSUE_TEMPLATE\question.yml">
+      <Filter>.github\ISSUE_TEMPLATE</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\debugger_arguments.txt" />

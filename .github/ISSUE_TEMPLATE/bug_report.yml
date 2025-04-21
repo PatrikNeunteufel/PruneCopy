@@ -1,0 +1,24 @@
+name: ⚠️ Bug Report
+about: Report a problem or unexpected behavior in PruneCopy
+labels: [bug]
+---
+
+## Describe the bug
+A clear and concise description of what the bug is.
+
+## To Reproduce
+Steps to reproduce the behavior:
+1. Command or scenario that triggers the issue
+2. What happens
+3. What you expected instead
+
+## Expected behavior
+A clear and concise description of what you expected to happen.
+
+## Environment (please complete the following information):
+- OS: [e.g. Windows 10, Ubuntu 22.04]
+- PruneCopy version: [e.g. v1.2.0]
+- Installed via: [e.g. GitHub Release, built from source]
+
+## Additional context
+Add any other context about the problem here.

@@ -195,7 +195,14 @@
     <ClInclude Include="Source\util\PatternUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\changelog.md" />
+    <None Include="..\.github\CODE_OF_CONDUCT.md" />
+    <None Include="..\.github\CONTRIBUTING.md" />
+    <None Include="..\.github\ISSUE_TEMPLATE\bug_report.yml" />
+    <None Include="..\.github\ISSUE_TEMPLATE\feature_request.yml" />
+    <None Include="..\.github\ISSUE_TEMPLATE\question.yml" />
+    <None Include="..\.github\PULL_REQUEST_TEMPLATE.md" />
+    <None Include="..\.github\SECURITY.md" />
+    <None Include="..\CHANGELOG.md" />
     <None Include="..\data\sponsors.json" />
     <None Include="..\data\version.json" />
     <None Include="..\installer\installer.iss" />
