@@ -10,6 +10,7 @@
 #include "util/ConvertUtils.hpp"
 #include "cli/ArgumentParser.hpp"
 #include "cli/Console.hpp"
+#include "cli/PresetLoader.hpp"
 #include "log/LogManager.hpp"
 
 #include <iostream>
@@ -68,12 +69,14 @@ std::vector<Flag> optionFlags = {
     {"--parallel-thread", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use threaded parallel file copying"},
     {"--parallel-openMP", "", FlagType::Option, FlagValueType::No_Value, "", "(comming feature) Use OpenMP for parallel copying"},
     {"--color", "", FlagType::Option, FlagValueType::Value,"<mode>", "Console color output: auto (default), always, never"},
-    {"--dry-run", "", FlagType::Option, FlagValueType::No_Value, "", "Show what would be copied without doing it"},
-    {"--preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Load and execute a named preset from ./presets/<name>.json"},
-    {"--save-preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Save current settings to ./presets/<name>.json"},
-    {"--list-presets", "", FlagType::Option, FlagValueType::No_Value, "", "(coming feature) List all available presets in the ./presets folder"},
-    {"--show-preset", "", FlagType::Option, FlagValueType::Value, "<name>", "(coming feature) Print the CLI equivalent of the preset"},
-    {"--dump-options", "", FlagType::Option, FlagValueType::No_Value, "", "(coming feature) Dump current config as JSON (for CI/debugging)"}
+    {"--dry-run", "", FlagType::Option, FlagValueType::No_Value, "", "Show what would be copied without doing it"}
+};
+std::vector<Flag> presetFlags = {
+	{"--preset", "", FlagType::Preset, FlagValueType::Value, "<name>", "Load and execute a named preset from ./presets/<name>.json"},
+	{"--save-preset", "", FlagType::Preset, FlagValueType::Value, "<name>", "Save current settings to ./presets/<name>.json"},
+	{"--list-presets", "", FlagType::Preset, FlagValueType::No_Value, "", "List all available presets in the ./presets folder"},
+	{"--show-preset", "", FlagType::Preset, FlagValueType::Value, "<name>", "Print the CLI equivalent of the preset"},
+    {"--dump-options", "", FlagType::Preset, FlagValueType::No_Value, "", "(coming feature) Dump current config as JSON (for CI/debugging)"}
 };
 
 
@@ -81,21 +84,52 @@ std::vector<Flag> optionFlags = {
 std::vector<std::string> ArgumentParser::s_deprecatedUsedFlags = {};
 
 // Main argument parser – decides which parsing mode to apply
-void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
-    // First pass to detect deprecated flags
+void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options, ParsedCliControl& controlFlags) {
+    // Check deprecated flags first
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (!arg.empty() && arg[0] == '-') {
             ArgumentParser::checkDeprecatedFlag(arg);
         }
     }
+    // Handle CLI preset-related flags first
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
 
-    // Legacy: positional <source> <destination>
+        if (arg == "--preset") {
+            if (i + 1 >= argc) throw std::runtime_error("--preset requires a preset name");
+            controlFlags.usePreset = true;
+            controlFlags.presetName = argv[++i];
+            controlFlags.normalMode = false;
+			return;
+        }
+        else if (arg == "--save-preset") {
+            if (i + 1 >= argc) throw std::runtime_error("--save-preset requires a preset name");
+            controlFlags.savePreset = true;
+            controlFlags.presetName = argv[++i];
+            // normalMode bleibt true – darf weiter normal laufen
+        }
+        else if (arg == "--show-preset") {
+            if (i + 1 >= argc) throw std::runtime_error("--show-preset requires a preset name");
+            controlFlags.showPreset = true;
+            controlFlags.presetName = argv[++i];
+            controlFlags.normalMode = false;
+			return;
+        }
+        else if (arg == "--list-presets") {
+            controlFlags.listPresets = true;
+            controlFlags.normalMode = false;
+			return;
+        }
+    }
+
+    // --- Legacy Mode ---
     if (argc >= 3 && argv[1][0] != '-' && argv[2][0] != '-') {
         options.sources.push_back(fs::absolute(argv[1]));
         options.destinations.push_back(fs::absolute(argv[2]));
     }
-    // Hybrid: positional <source> + --destination ...
+
+    // --- Hybrid Mode ---
     else if (argc >= 3 && argv[1][0] != '-' && (hasFlag(argc, argv, "--destination") || hasFlag(argc, argv, "-d"))) {
         options.sources.push_back(fs::absolute(argv[1]));
         options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "--destination"));
@@ -103,7 +137,8 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
             options.destinations = ConvertUtils::toPaths(getOptionValues(argc, argv, "-d"));
         }
     }
-    // Full CLI mode: --source ... --destination ...
+
+    // --- Full CLI Mode ---
     else {
         if (hasFlag(argc, argv, "--source") || hasFlag(argc, argv, "-s")) {
             options.sources = ConvertUtils::toPaths(getOptionValues(argc, argv, "--source"));
@@ -126,26 +161,26 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
         }
     }
 
-    // Handle list-based options (file patterns, exclusions, etc.)
+    // --- Multi-Value Options ---
     options.types = getOptionValues(argc, argv, "--types");
     options.excludeDirs = getOptionValues(argc, argv, "--exclude-dirs");
     options.excludeFiles = getOptionValues(argc, argv, "--exclude-files");
 
-    // Convert patterns to regular expressions
+    // --- Compile Patterns ---
     options.typePatterns = PatternUtils::convertToRegex(options.types);
     options.excludeFilePatterns = PatternUtils::convertToRegex(options.excludeFiles);
 
-    // Boolean flags
+    // --- Booleans ---
     options.dryRun = hasFlag(argc, argv, "--dry-run");
     options.noOverwrite = hasFlag(argc, argv, "--no-overwrite");
     options.forceOverwrite = hasFlag(argc, argv, "--force-overwrite");
     options.flatten = hasFlag(argc, argv, "--flatten") || hasFlag(argc, argv, "--flatten-suffix");
     options.flattenWithSuffix = hasFlag(argc, argv, "--flatten-suffix");
     options.deleteTargetFirst = hasFlag(argc, argv, "--delete-target-first");
-    options.quiet = hasFlag(argc, argv, "--cmdln-out-off"); // deprecated in favor of --log-level none
+    options.quiet = hasFlag(argc, argv, "--cmdln-out-off");
     options.openLog = hasFlag(argc, argv, "--log-open");
 
-    // Select parallelization mode (feature in progress)
+    // --- Parallel Modes ---
     if (hasFlag(argc, argv, "--parallel-thread")) {
         options.parallelMode = ParallelMode::Thread;
     }
@@ -159,7 +194,7 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
         options.parallelMode = ParallelMode::None;
     }
 
-    // Handle options with single value
+    // --- Single-Value Options ---
     for (int i = 3; i < argc; ++i) {
         std::string arg = argv[i];
 
@@ -168,6 +203,7 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
             options.logDir = fs::absolute(argv[++i]);
             options.enableLogging = true;
         }
+
         else if (arg == "--log-level") {
             if (i + 1 >= argc) throw std::runtime_error("--log-level requires a value (info|warning|error)");
             try {
@@ -177,6 +213,7 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
                 throw std::runtime_error(std::string("Invalid log level: ") + e.what());
             }
         }
+
         else if (arg == "--color") {
             if (i + 1 >= argc) throw std::runtime_error("--color requires a value (auto|always|never)");
             std::string value = argv[++i];
@@ -188,6 +225,7 @@ void ArgumentParser::parse(int argc, char* argv[], PruneOptions& options) {
         }
     }
 }
+
 
 // Checks if the given flag is present in the argument list
 bool ArgumentParser::hasFlag(int argc, char* argv[], const std::string& flag) {
@@ -244,6 +282,11 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
             return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
             });
         if (it != developerFlags.end()) return &(*it);
+
+        it = std::find_if(presetFlags.begin(), presetFlags.end(), [&](const Flag& f) {
+            return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
+            });
+        if (it != presetFlags.end()) return &(*it);
 
         it = std::find_if(multi_required.begin(), multi_required.end(), [&](const Flag& f) {
             return arg == f.name || (!f.shortName.empty() && arg == f.shortName);
@@ -315,7 +358,7 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
     if (argc == 2) {
         const std::string arg = argv[1];
         const Flag* flag = isRecognizedFlag(arg);
-        if (!flag || !(flag->type == FlagType::Info || flag->type == FlagType::Internal)) {
+        if (!flag || !(flag->type == FlagType::Info || flag->type == FlagType::Internal || flag->type == FlagType::Preset)) {
             message = "Single argument must be an Info flag (e.g., --help).\nuse --help or -h for help\n";
             LogManager::log(LogLevel::Error, message);
             return false;
@@ -337,8 +380,15 @@ bool ArgumentParser::checkArguments(int argc, char* argv[]) {
         return it != developerFlags.end();
         });
 
+    bool onlypresetFlags = std::all_of(usedFlags.begin(), usedFlags.end(), [](const std::string& name) {
+        auto it = std::find_if(presetFlags.begin(), presetFlags.end(), [&](const Flag& f) {
+            return f.name == name;
+            });
+        return it != presetFlags.end();
+        });
+
     // Validate that required argument combinations are fulfilled
-    if (!(onlyInfoFlags || onlyInternalFlags)) {
+    if (!(onlyInfoFlags || onlyInternalFlags || onlypresetFlags)) {
         bool hasSourceFlag = usedFlags.count("--source") || usedFlags.count("-s");
         bool hasDestFlag = usedFlags.count("--destination") || usedFlags.count("-d");
 
@@ -464,3 +514,101 @@ const std::vector<Flag>& ArgumentParser::getAllRegisteredFlags() {
         }();
     return all;
 }
+
+/*****************************************************************//**
+ * @brief   Reconstructs the command line arguments based on current options.
+ * @param   options The PruneOptions structure to convert.
+ * @return  A vector of argument strings equivalent to a CLI call.
+ *********************************************************************/
+std::vector<std::string> ArgumentParser::rebuildArgumentsFromOptions(const PruneOptions& options)
+{
+    std::vector<std::string> args;
+
+    // --- Source directories ---
+    if (!options.sources.empty()) {
+        args.push_back("--source");
+        for (const auto& src : options.sources) {
+            args.push_back(src.string());
+        }
+    }
+
+    // --- Destination directories ---
+    if (!options.destinations.empty()) {
+        args.push_back("--destination");
+        for (const auto& dst : options.destinations) {
+            args.push_back(dst.string());
+        }
+    }
+
+    // --- Include file types ---
+    if (!options.types.empty()) {
+        args.push_back("--types");
+        for (const auto& pattern : options.types) {
+            args.push_back(pattern);
+        }
+    }
+
+    // --- Excluded directories ---
+    if (!options.excludeDirs.empty()) {
+        args.push_back("--exclude-dirs");
+        for (const auto& dir : options.excludeDirs) {
+            args.push_back(dir);
+        }
+    }
+
+    // --- Excluded file patterns ---
+    if (!options.excludeFiles.empty()) {
+        args.push_back("--exclude-files");
+        for (const auto& pattern : options.excludeFiles) {
+            args.push_back(pattern);
+        }
+    }
+
+    // --- Log options ---
+    if (options.enableLogging && !options.logDir.empty()) {
+        args.push_back("--log-dir");
+        args.push_back(options.logDir.string());
+
+        if (options.openLog) {
+            args.push_back("--log-open");
+        }
+    }
+
+    // --- Log level ---
+    switch (options.logLevel) {
+    case LogLevel::None:      args.push_back("--log-level"); args.push_back("None"); break;
+    case LogLevel::Error:     args.push_back("--log-level"); args.push_back("Error"); break;
+    case LogLevel::Warning:   args.push_back("--log-level"); args.push_back("Warning"); break;
+    case LogLevel::Info:      args.push_back("--log-level"); args.push_back("Info"); break;
+    case LogLevel::Standard:  args.push_back("--log-level"); args.push_back("Standard"); break;
+    case LogLevel::All:       args.push_back("--log-level"); args.push_back("All"); break;
+    default: break;
+    }
+
+    // --- Booleans / flags ---
+    if (options.dryRun)            args.push_back("--dry-run");
+    if (options.deleteTargetFirst) args.push_back("--delete-target-first");
+    if (options.noOverwrite)       args.push_back("--no-overwrite");
+    if (options.forceOverwrite)    args.push_back("--force-overwrite");
+    if (options.flatten)           args.push_back("--flatten");
+    if (options.flattenWithSuffix) args.push_back("--flatten-suffix");
+
+    // --- Parallel mode ---
+    switch (options.parallelMode) {
+    case ParallelMode::Async:   args.push_back("--parallel-async"); break;
+    case ParallelMode::Thread:  args.push_back("--parallel-thread"); break;
+    case ParallelMode::OpenMP:  args.push_back("--parallel-openMP"); break;
+    default: break;
+    }
+
+    // --- Color mode ---
+    switch (options.colorMode) {
+    case ColorMode::Always: args.push_back("--color"); args.push_back("always"); break;
+    case ColorMode::Never:  args.push_back("--color"); args.push_back("never"); break;
+    case ColorMode::Auto:
+    default:                args.push_back("--color"); args.push_back("auto"); break;
+    }
+
+    return args;
+}
+

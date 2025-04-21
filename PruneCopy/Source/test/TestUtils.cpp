@@ -24,3 +24,13 @@ bool TestUtils::assertTrue(bool condition, const std::string& testName) {
 bool TestUtils::assertFalse(bool condition, const std::string& testName) {
 	return assertTrue(!condition, testName);
 }
+
+bool TestUtils::assertContains(const std::string& haystack, const std::string& needle, const std::string& testName) {
+    if (haystack.find(needle) != std::string::npos) {
+        std::cout << "[PASS] " << testName << "\n";
+        return true;
+    } else {
+        std::cerr << "[FAIL] " << testName << " – expected to find substring: '" << needle << "'\n";
+        return false;
+    }
+}

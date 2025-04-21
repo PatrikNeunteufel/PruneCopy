@@ -17,6 +17,23 @@
 
 namespace fs = std::filesystem;
 
+
+/**
+ * @brief Struct representing the control flags for command-line argument parsing.
+ *
+ * This struct contains flags that control the behavior of the CLI, such as
+ * whether to load a preset, save a preset, show a preset, or list available presets.
+ */
+struct ParsedCliControl {
+
+	bool usePreset = false;		// Whether a preset should be loaded and executed	
+	bool savePreset = false;	// Whether a preset should be saved (based on current CLI state)	
+	bool showPreset = false;	// Whether a preset should be shown as a CLI equivalent	
+	bool listPresets = false;	// Whether the available presets should be listed	
+	std::string presetName;		// The name of the preset to load/save/show (e.g., "myBackupConfig")	
+	bool normalMode = true;		// Whether normal CLI execution should continue
+};
+
 /**
  * @brief Enum for different types of command-line flags.
  *
@@ -25,6 +42,7 @@ namespace fs = std::filesystem;
 enum class FlagType {
 	Info,          ///< Information flag (e.g., --help)
 	Option,         ///< Option flag (e.g., --types)
+	Preset,        ///< Preset flag (e.g., --preset)
 	Internal,       ///< Internal flag (e.g., --unit-test)
 };
 /**
@@ -81,9 +99,9 @@ extern std::vector<Flag> infoFlags;
 /**
  * @brief List of command-line flags for the PruneCopy tool.
  *
- * This list contains all available info flags, their types, and descriptions.
+ * This list contains all available preset flags, their types, and descriptions.
  */
-extern std::vector<Flag> infoFlags;
+extern  std::vector<Flag> presetFlags;
 
 /**
  * @brief List of command-line flags for the PruneCopy tool.
@@ -104,7 +122,7 @@ public:
     /**
      * @brief Parses command-line arguments and sets configuration variables.
      */
-    static void parse(int argc, char* argv[], PruneOptions& options);
+    static void parse(int argc, char* argv[], PruneOptions& options, ParsedCliControl& controlFlags);
 
 	/**
 	 * @brief Checks if a specific flag is present in the command-line arguments.
@@ -176,6 +194,12 @@ public:
 	 */
 	static void clearDeprecatedFlagLog();
 
+	/**
+	 * @brief Rebuilds the command-line argument list based on a PruneOptions structure.
+	 * @param options The options to translate into CLI arguments.
+	 * @return A vector of strings representing the equivalent command line.
+	 */
+	static std::vector<std::string> rebuildArgumentsFromOptions(const PruneOptions& options);
 private:
 
 	/**
@@ -195,6 +219,8 @@ private:
 	 * @return A vector containing all registered flags.
 	 */
 	static const std::vector<Flag>& getAllRegisteredFlags();
+
+
 };
 
 

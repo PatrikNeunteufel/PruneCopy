@@ -56,6 +56,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Source\cli\PresetLoader.cpp" />
     <ClCompile Include="Source\core\FileCopier.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -103,6 +104,7 @@
     <ClCompile Include="Source\test\ArgumentParseTest.cpp" />
     <ClCompile Include="Source\test\BasicFunctionTest.cpp" />
     <ClCompile Include="Source\test\FileCopierTest.cpp" />
+    <ClCompile Include="Source\test\PresetLoaderTest.cpp" />
     <ClCompile Include="Source\test\TestRunner.cpp" />
     <ClCompile Include="Source\test\TestUtils.cpp" />
     <ClCompile Include="Source\util\ConvertUtils.cpp" />
@@ -138,6 +140,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Source\cli\PresetLoader.hpp" />
     <ClInclude Include="Source\core\FileCopier.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -184,6 +187,7 @@
     <ClInclude Include="Source\test\ArgumentParseTest.hpp" />
     <ClInclude Include="Source\test\BasicFunctionTest.hpp" />
     <ClInclude Include="Source\test\FileCopierTest.hpp" />
+    <ClInclude Include="Source\test\PresetLoaderTest.hpp" />
     <ClInclude Include="Source\test\TestRunner.hpp" />
     <ClInclude Include="Source\test\TestUtils.hpp" />
     <ClInclude Include="Source\util\ConvertUtils.hpp" />

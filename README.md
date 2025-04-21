@@ -8,7 +8,7 @@ the idea for this tool was born out of the need to copy only specific files from
 The tool is designed to be flexible and extensible, allowing users to customize the file selection process according to their specific needs.
 
 
-> 🆕 **v1.0.2 Released!**  
+> 🆕 **v1.0.3 Released!**  
 > Download the latest version as a ZIP or Installer [from GitHub Releases](https://github.com/PatrikNeunteufel/PruneCopy/releases).  
 
 
@@ -31,6 +31,17 @@ new features in v1.0.2:
 - multiple source folders (`--source <sourcepaths>` instead of `<sourcepath>`)
 - multiple destination folders (`--destination <destpaths>` instead of `<destpath>`)
 - check for updates (`--update`)
+
+new features in v1.0.3:
+- added `--preset` to load a preset file
+- added `--save-preset` to save the current command line arguments as a preset
+- added `--show-preset` to show the presets command line arguments
+- added `--list-presets` to list all available presets
+- added more log levels, they now work hirarchically All > Standard > Info > Warning > Error > None
+- added deprecated info when using deprecated flags
+- 
+deprecated features:
+- `--cmdln-out-off`: replaced by `--log-level none`
 
 ---
 

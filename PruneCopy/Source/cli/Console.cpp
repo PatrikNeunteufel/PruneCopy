@@ -56,6 +56,10 @@ void Console::printHelp() {
     printFlagsHelp(infoFlags, helpFieldWidth);
     std::cout << "\nOptions Flags:\n";
     printFlagsHelp(optionFlags, helpFieldWidth);
+	std::cout << "\nPreset Flags:\n";
+	printFlagsHelp(presetFlags, helpFieldWidth);
+	std::cout << "\nDeveloper Flags:\n";
+	printFlagsHelp(developerFlags, helpFieldWidth);
 }
 
 // Shows usage examples for legacy, hybrid, and full CLI modes

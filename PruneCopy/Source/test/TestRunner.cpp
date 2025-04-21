@@ -10,6 +10,7 @@
 #include "TestUtils.hpp"
 #include "FileCopierTest.hpp"
 #include "ArgumentParseTest.hpp"
+#include "PresetLoaderTest.hpp"
 
 
  // includes für einzelne Testgruppen
@@ -32,6 +33,10 @@ bool TestRunner::runAllTests() {
 	// Run integration tests involving file operations
 	std::cout << "[TEST] Running integration tests...\n";
 	if (!FileCopierTest::run()) allPassed = false;
+
+	// Run PresetLoader tests
+	std::cout << "[TEST] Running Preset Loader tests...\n";
+	if (!PresetLoaderTest::run()) allPassed = false;
 
 	// Print overall test result
 	std::cout << (allPassed ? "[TEST] ALL PASSED\n" : "[TEST] FAILURES DETECTED\n");

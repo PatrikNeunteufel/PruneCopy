@@ -66,6 +66,25 @@ namespace TestUtils {
     }
 
     /**
+ * @brief Converts a vector of strings into a formatted string representation.
+ *
+ * @param vec The vector of strings
+ * @return Comma-separated string list
+ */
+    inline std::string toString(const std::vector<std::string>& vec) {
+        std::ostringstream oss;
+        oss << "[";
+        for (size_t i = 0; i < vec.size(); ++i) {
+            oss << "\"" << vec[i] << "\"";
+            if (i != vec.size() - 1)
+                oss << ", ";
+        }
+        oss << "]";
+        return oss.str();
+    }
+
+
+    /**
      * @brief Asserts that two values are equal by comparing their stringified representations.
      *
      * @tparam T Type of expected value
@@ -109,5 +128,17 @@ namespace TestUtils {
      * @return True if the condition is false, false otherwise
      */
     bool assertFalse(bool condition, const std::string& message = "");
+
+    /**
+ * @brief Asserts that the given haystack string contains the needle substring.
+ *
+ * This function is isolated from toString() and works only with std::string.
+ *
+ * @param haystack The full string to search in
+ * @param needle The substring to search for
+ * @param testName Descriptive name of the test
+ * @return True if the substring is found, false otherwise
+ */
+bool assertContains(const std::string& haystack, const std::string& needle, const std::string& testName);
 
 } // namespace TestUtils

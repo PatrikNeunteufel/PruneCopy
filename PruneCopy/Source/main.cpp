@@ -3,6 +3,7 @@
 
 #include "cli/ArgumentParser.hpp"
 #include "cli/Console.hpp"
+#include "cli/PresetLoader.hpp"
 #include "util/PatternUtils.hpp"
 #include "core/FileCopier.hpp"
 #include "log/LogManager.hpp"
@@ -41,12 +42,50 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        // Parse arguments into PruneOptions and configure logging
+        // Parse arguments into PruneOptions and controlFlags and configure logging
         PruneOptions options;
-        ArgumentParser::parse(argc, argv, options);
+		ParsedCliControl controlFlags;
+        ArgumentParser::parse(argc, argv, options, controlFlags);
         LogManager::setConsoleLogLevel(options.logLevel);
         LogManager::enableAnsiColorsIfSupported(options.colorMode);
         ArgumentParser::emitDeprecatedWarnings(); // now colored output
+        if (!controlFlags.normalMode) {
+            // Nur ein spezieller CLI-Befehl wurde gegeben, normale Ausführung wird übersprungen
+
+            if (controlFlags.listPresets) {
+                auto presets = PresetLoader::listPresets();
+                if (presets.empty()) {
+                    LogManager::log(LogLevel::Info, "No presets found in: " + PresetLoader::getPresetDir().string());
+                }
+                else {
+                    LogManager::log(LogLevel::Info, "Available presets:");
+                    for (const auto& name : presets) {
+                        LogManager::log(LogLevel::Info, "  " + name);
+                    }
+                }
+                return 0;
+            }
+
+            if (controlFlags.showPreset) {
+                auto cliString = PresetLoader::showPreset(controlFlags.presetName);
+                if (cliString.empty()) {
+                    LogManager::log(LogLevel::Error, "Preset \"" + controlFlags.presetName + "\" could not be found or loaded.");
+                    return 2;
+                }
+                LogManager::log(LogLevel::Info, cliString);
+                return 0;
+            }
+
+            if (controlFlags.usePreset) {
+                auto loaded = PresetLoader::loadPreset(controlFlags.presetName);
+                if (!loaded.has_value()) {
+                    LogManager::log(LogLevel::Error, "Failed to load preset: " + controlFlags.presetName);
+                    return 2;
+                }
+                options = loaded.value(); // ersetzt die vorher parsierten Optionen
+                LogManager::log(LogLevel::Info, "Loaded preset: " + controlFlags.presetName);
+            }
+        }
 
         // Preprocess patterns for filtering
         auto typePatterns = PatternUtils::wildcardsToRegex(options.types);
@@ -163,6 +202,17 @@ int main(int argc, char* argv[]) {
             std::string command = "xdg-open \"" + logFilePath + "\"";
 #endif
             system(command.c_str());
+        }
+
+        // Save current settings to preset (if requested)
+        if (controlFlags.savePreset) {
+            bool success = PresetLoader::savePreset(controlFlags.presetName, options);
+            if (success) {
+                LogManager::log(LogLevel::Info, "Preset saved: " + controlFlags.presetName);
+            }
+            else {
+                LogManager::log(LogLevel::Error, "Failed to save preset: " + controlFlags.presetName);
+            }
         }
 
         return 0;

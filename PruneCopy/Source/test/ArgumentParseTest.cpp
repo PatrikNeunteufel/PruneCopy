@@ -41,9 +41,9 @@ bool ArgumentParseTest::testLegacyMode() {
     const char* argv[] = { "prunecopy", "source", "target" };
     int argc = sizeof(argv) / sizeof(argv[0]);
     PruneOptions opts;
-
+	ParsedCliControl controlFlags;
     // Parse legacy-style CLI input
-    ArgumentParser::parse(argc, const_cast<char**>(argv), opts);
+    ArgumentParser::parse(argc, const_cast<char**>(argv), opts, controlFlags);
 
     bool success = true;
 
@@ -69,8 +69,9 @@ bool ArgumentParseTest::testFullCLIMode() {
     int argc = sizeof(argv) / sizeof(argv[0]);
     PruneOptions opts;
 
+    ParsedCliControl controlFlags;
     // Parse CLI-style argument list
-    ArgumentParser::parse(argc, const_cast<char**>(argv), opts);
+    ArgumentParser::parse(argc, const_cast<char**>(argv), opts, controlFlags);
 
     bool success = true;
 
@@ -96,9 +97,10 @@ bool ArgumentParseTest::testColorMode() {
     };
     int argc = sizeof(argv) / sizeof(argv[0]);
     PruneOptions opts;
+    ParsedCliControl controlFlags;
 
     // Parse input and check whether color mode is set to Always
-    ArgumentParser::parse(argc, const_cast<char**>(argv), opts);
+    ArgumentParser::parse(argc, const_cast<char**>(argv), opts, controlFlags);
     return TestUtils::assertEqual(ColorMode::Always, opts.colorMode, "ColorMode: always");
 }
 
@@ -113,9 +115,10 @@ bool ArgumentParseTest::testDeprecatedDetection() {
     };
     int argc = sizeof(argv) / sizeof(argv[0]);
     PruneOptions opts;
+    ParsedCliControl controlFlags;
 
     ArgumentParser::clearDeprecatedFlagLog(); // Clear any previous warnings
-    ArgumentParser::parse(argc, const_cast<char**>(argv), opts);
+    ArgumentParser::parse(argc, const_cast<char**>(argv), opts, controlFlags);
 
     // Redirect std::cout to capture output from deprecated warning emitter
     std::ostringstream out;

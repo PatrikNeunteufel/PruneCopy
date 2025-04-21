@@ -78,6 +78,12 @@
     <ClCompile Include="Source\test\ArgumentParseTest.cpp">
       <Filter>Source\test</Filter>
     </ClCompile>
+    <ClCompile Include="Source\cli\PresetLoader.cpp">
+      <Filter>Source\cli</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\test\PresetLoaderTest.cpp">
+      <Filter>Source\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\cli\ArgumentParser.hpp">
@@ -120,6 +126,12 @@
       <Filter>Source\test</Filter>
     </ClInclude>
     <ClInclude Include="Source\test\ArgumentParseTest.hpp">
+      <Filter>Source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\cli\PresetLoader.hpp">
+      <Filter>Source\cli</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\test\PresetLoaderTest.hpp">
       <Filter>Source\test</Filter>
     </ClInclude>
   </ItemGroup>
