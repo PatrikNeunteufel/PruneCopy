@@ -1,6 +1,6 @@
 # changelog
 
-## V 1.0.3 - 2025-04-12
+## V 1.0.3 - 2025-04-21
 - change structure for fileCopier to prepare reusability for the other copying methods
 - moved isExcludedDir() methode from fileCopier to PatternUtils
 - extended Testing for ArgumentParser and FileCopier
@@ -8,7 +8,7 @@
 - added deprecated for flags and handling in ArgumentParser
 - unified LogManager to better reuse the code
 - added more log levels, they now work hirarchically All > Standard > Info > Warning > Error > None
-- added LogLevel to PruneOptions ti centralize the log level for the whole program
+- added LogLevel to PruneOptions to centralize the log level for the whole program
 - cleanup the comments and added doxygen comments
 - fixed log to show excluded files and directories only once per source not per destination
 - info for included files and also excluded directories and files are now shown in the log
