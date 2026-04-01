@@ -16,8 +16,11 @@
  // On Windows, uses GetModuleFileNameW; on other platforms, falls back to current working directory.
 std::filesystem::path PathUtils::getExecutableDirectory() {
 #ifdef _WIN32
-    wchar_t buffer[MAX_PATH];
-    GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+    wchar_t buffer[MAX_PATH] = {};
+    DWORD len = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+    if (len == 0) {
+        return std::filesystem::current_path();
+    }
     return std::filesystem::path(buffer).parent_path();
 #else
     return std::filesystem::current_path(); // TODO: Replace with platform-specific logic

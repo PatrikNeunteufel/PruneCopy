@@ -137,10 +137,10 @@ bool FileCopier::handleOverwritePrompt(const fs::path& targetFile) {
         case 'y': return true;
         case 'n': return false;
         case 'a':
-            const_cast<PruneOptions&>(m_options).forceOverwrite = true;
+            m_options.forceOverwrite = true;
             return true;
         case 's':
-            const_cast<PruneOptions&>(m_options).noOverwrite = true;
+            m_options.noOverwrite = true;
             return false;
         case 'c':
             LogManager::log(LogType::Aborted, "Operation cancelled by user.", m_logFile);
@@ -204,10 +204,10 @@ bool FileCopier::handleFlattenConflictPrompt(std::filesystem::path& targetFile) 
             LogManager::log(LogType::Aborted, "Operation cancelled by user.", m_logFile);
             exit(0);
         case 'a':
-            const_cast<PruneOptions&>(m_options).forceOverwrite = true;
+            m_options.forceOverwrite = true;
             return true;
         case 'm':
-            const_cast<PruneOptions&>(m_options).flattenAutoRename = true;
+            m_options.flattenAutoRename = true;
             targetFile = suggested;
             return true;
         default:

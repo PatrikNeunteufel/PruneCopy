@@ -41,9 +41,17 @@ fs::path PresetLoader::getPresetDir() {
         return fs::path(*env);
     }
 #ifdef _WIN32
-    return fs::path(*getEnvVar("APPDATA")) / "PruneCopy" / "presets";
+    auto appdata = getEnvVar("APPDATA");
+    if (!appdata.has_value()) {
+        throw std::runtime_error("Environment variable APPDATA is not set");
+    }
+    return fs::path(*appdata) / "PruneCopy" / "presets";
 #else
-    return fs::path(*getEnvVar("HOME")) / ".config" / "prunecopy" / "presets";
+    auto home = getEnvVar("HOME");
+    if (!home.has_value()) {
+        throw std::runtime_error("Environment variable HOME is not set");
+    }
+    return fs::path(*home) / ".config" / "prunecopy" / "presets";
 #endif
 }
 

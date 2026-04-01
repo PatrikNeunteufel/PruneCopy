@@ -94,6 +94,6 @@ protected:
 	std::filesystem::path resolveFileNameConflict(const std::filesystem::path& originalPath) const;
 
 protected:
-	const PruneOptions& m_options; ///< The configuration options for file copying.
+	PruneOptions m_options; ///< The configuration options for file copying.
 	std::ofstream* m_logFile; ///< Optional pointer to an ofstream for logging output.
 };
