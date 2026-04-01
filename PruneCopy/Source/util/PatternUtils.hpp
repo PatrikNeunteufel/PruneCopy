@@ -45,9 +45,11 @@ namespace PatternUtils {
     std::vector<std::regex> convertToRegex(const std::vector<std::string>& patterns);
 
 	/**
-	 * @brief Checks if a directory name matches any of the given exclusion substrings.
-	 * @param dir Directory name to check
-	 * @param excludeDirs Vector of exclusion substrings
+	 * @brief Checks if a directory name matches any of the given exclusion patterns.
+	 * Supports glob wildcards: * matches any sequence of characters, ? matches a single character.
+	 * An exact name (no wildcards) must match the full directory name.
+	 * @param dir Directory path to check (only the filename component is used)
+	 * @param excludeDirs Vector of exclusion patterns (glob wildcards supported)
 	 * @return true if the directory is excluded, false otherwise
 	 */
     bool isExcludedDir(const std::filesystem::path& dir, const std::vector<std::string>& excludeDirs);

@@ -56,15 +56,12 @@ std::vector<std::regex> PatternUtils::convertToRegex(const std::vector<std::stri
     return result;
 }
 
-// Checks if a directory name matches any of the given exclusion substrings.
-// The check is based on partial matches (not full pattern matching).
+// Checks if a directory name matches any of the given exclusion patterns.
+// Supports glob wildcards: * matches any sequence of characters, ? matches a single character.
+// An exact name (no wildcards) must match the full directory name.
 bool PatternUtils::isExcludedDir(const std::filesystem::path& dir, const std::vector<std::string>& excludeDirs) {
     const std::string name = dir.filename().string();
-    for (const auto& pattern : excludeDirs) {
-        if (name.find(pattern) != std::string::npos) {
-            return true;
-        }
-    }
-    return false;
+    const std::vector<std::regex> patterns = convertToRegex(excludeDirs);
+    return matchesPattern(name, patterns);
 }
 

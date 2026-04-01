@@ -120,6 +120,18 @@ bool FileCopierTest::testExcludeDir() {
     // "src" should not match exclusion rules
     ok &= TestUtils::assertFalse(FileCopier::isExcludedDir("src", { "build", "out" }), "src should not be excluded");
 
+    // Wildcard: ".git*" should match ".git"
+    ok &= TestUtils::assertTrue(FileCopier::isExcludedDir(".git", { ".git*" }), ".git should be excluded by .git*");
+
+    // Wildcard: ".git*" should match ".github"
+    ok &= TestUtils::assertTrue(FileCopier::isExcludedDir(".github", { ".git*" }), ".github should be excluded by .git*");
+
+    // Exact: ".git" pattern must not match ".github"
+    ok &= TestUtils::assertFalse(FileCopier::isExcludedDir(".github", { ".git" }), ".github should not be excluded by exact .git pattern");
+
+    // Wildcard: "build*" should match "build_output"
+    ok &= TestUtils::assertTrue(FileCopier::isExcludedDir("build_output", { "build*" }), "build_output should be excluded by build*");
+
     return ok;
 }
 
