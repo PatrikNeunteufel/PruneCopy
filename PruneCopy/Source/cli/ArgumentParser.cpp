@@ -595,6 +595,7 @@ std::vector<std::string> ArgumentParser::rebuildArgumentsFromOptions(const Prune
     if (options.forceOverwrite)    args.push_back("--force-overwrite");
     if (options.flatten)           args.push_back("--flatten");
     if (options.flattenWithSuffix) args.push_back("--flatten-suffix");
+    if (options.flattenAutoRename) args.push_back("--flatten-auto-rename");
 
     // --- Parallel mode ---
     switch (options.parallelMode) {
