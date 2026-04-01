@@ -512,6 +512,7 @@ const std::vector<Flag>& ArgumentParser::getAllRegisteredFlags() {
         combined.insert(combined.end(), developerFlags.begin(), developerFlags.end());
         combined.insert(combined.end(), legacy_required.begin(), legacy_required.end());
         combined.insert(combined.end(), multi_required.begin(), multi_required.end());
+        combined.insert(combined.end(), presetFlags.begin(), presetFlags.end());
         return combined;
         }();
     return all;
