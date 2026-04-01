@@ -80,7 +80,7 @@ bool TestUtils::assertContains(const std::string& haystack, const std::string& n
         std::cout << "[PASS] " << testName << "\n";
         return true;
     } else {
-        std::cerr << "[FAIL] " << testName << " – expected to find substring: '" << needle << "'\n";
+        std::cerr << "[FAIL] " << testName << " - expected to find substring: '" << needle << "'\n";
         return false;
     }
 }
